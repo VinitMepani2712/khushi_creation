@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
 import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:khushi_creation/screens/location/location_screen.dart';
 import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,7 +28,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-void registration() async {
+  void registration() async {
     if (!isChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -57,7 +59,7 @@ void registration() async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => BottomNavBar(),
+            builder: (context) => LocationScreen(),
           ),
         );
       } on FirebaseException catch (e) {
@@ -247,7 +249,7 @@ void registration() async {
     );
   }
 
- Widget _buildCheckbox() {
+  Widget _buildCheckbox() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -271,7 +273,7 @@ void registration() async {
           onChanged: (newValue) {
             setState(() {
               isChecked = newValue ?? false;
-              showCheckboxError = false; 
+              showCheckboxError = false;
             });
           },
           controlAffinity: ListTileControlAffinity.leading,
@@ -291,6 +293,7 @@ void registration() async {
       ],
     );
   }
+
   Widget _buildSignUpButton() {
     return GestureDetector(
       onTap: () async {
@@ -329,14 +332,26 @@ void registration() async {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildSocialIcon(FontAwesomeIcons.apple),
-        _buildSocialIcon(FontAwesomeIcons.google),
-        _buildSocialIcon(FontAwesomeIcons.facebook),
+        _buildSocialIcon(
+          'assets/svg/apple.svg',
+          20.0.w,
+          30.0.h,
+        ),
+        _buildSocialIcon(
+          'assets/svg/google.svg',
+          20.0.w,
+          30.0.h,
+        ),
+        _buildSocialIcon(
+          'assets/svg/facebook.svg',
+          20.0.w,
+          30.0.h,
+        ),
       ],
     );
   }
 
-  Widget _buildSocialIcon(IconData icon) {
+  Widget _buildSocialIcon(String assetName, double width, double height) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
@@ -346,7 +361,11 @@ void registration() async {
         minRadius: 25,
         maxRadius: 25,
         backgroundColor: Colors.transparent,
-        child: Icon(icon),
+        child: SvgPicture.asset(
+          assetName,
+          width: width, 
+          height: height, 
+        ),
       ),
     );
   }

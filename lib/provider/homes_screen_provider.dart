@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../model/cloth_item_model.dart';
 import '../../model/silder_model.dart';
@@ -8,6 +10,9 @@ class HomeProviderScreen with ChangeNotifier {
   final SliderModel sliderModel = SliderModel();
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
+  String? _currentLocation;
+
+  String? get currentLocation => _currentLocation;
 
   int currentIndex = 0;
   int selectedCategoryIndex = 0;
@@ -166,5 +171,22 @@ class HomeProviderScreen with ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  void setCurrentLocation(String? location) {
+    _currentLocation = location;
+    notifyListeners();
+  }
+
+  Future<void> fetchLocation() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      _currentLocation = doc['location'];
+      notifyListeners();
+    }
   }
 }

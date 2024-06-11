@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:khushi_creation/screens/auth/forgot_password_screen.dart';
 import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
 import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
@@ -24,9 +25,18 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> userSignIn() async {
     try {
-      await FirebaseAuth.instance
+      final usercredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      // If successful, navigate to the home screen or another screen
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            "Log in Successfully",
+            style: AppWidget.snackbarTextStyle(),
+          ),
+        ),
+      );
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -34,33 +44,27 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      String errorMessage;
       if (e.code == 'user-not-found') {
-        errorMessage = 'No User Found for that Email';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.brown,
+            content: Text(
+              "No user found for that email.",
+              style: AppWidget.snackbarTextStyle(),
+            ),
+          ),
+        );
       } else if (e.code == 'wrong-password') {
-        errorMessage = 'Please enter a valid password';
-      } else {
-        errorMessage = 'An unknown error occurred';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.brown,
+            content: Text(
+              'Wrong password provided for that user.',
+              style: AppWidget.snackbarTextStyle(),
+            ),
+          ),
+        );
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            errorMessage,
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            'An error occurred. Please try again later.',
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
-      );
     }
   }
 
@@ -155,8 +159,9 @@ class _SignInScreenState extends State<SignInScreen> {
         TextFormField(
           controller: passwordController,
           obscureText: !isPasswordVisible1,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Please Enter Password' : null,
+          validator: (value) => value == null || value.isEmpty
+              ? '\u274C Please Enter Password'
+              : null,
           decoration: _inputDecoration(
             hintText: 'Password',
             icon: isPasswordVisible1
@@ -229,14 +234,26 @@ class _SignInScreenState extends State<SignInScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildSocialIcon(FontAwesomeIcons.apple),
-        _buildSocialIcon(FontAwesomeIcons.google),
-        _buildSocialIcon(FontAwesomeIcons.facebook),
+        _buildSocialIcon(
+          'assets/svg/apple.svg',
+          20.0.w,
+          30.0.h,
+        ),
+        _buildSocialIcon(
+          'assets/svg/google.svg',
+          20.0.w,
+          30.0.h,
+        ),
+        _buildSocialIcon(
+          'assets/svg/facebook.svg',
+          20.0.w,
+          30.0.h,
+        ),
       ],
     );
   }
 
-  Widget _buildSocialIcon(IconData icon) {
+  Widget _buildSocialIcon(String assetName, double width, double height) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
@@ -246,7 +263,11 @@ class _SignInScreenState extends State<SignInScreen> {
         minRadius: 25,
         maxRadius: 25,
         backgroundColor: Colors.transparent,
-        child: Icon(icon),
+        child: SvgPicture.asset(
+          assetName,
+          width: width,
+          height: height,
+        ),
       ),
     );
   }

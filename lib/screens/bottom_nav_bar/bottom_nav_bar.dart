@@ -8,6 +8,10 @@ import '../main_screen/home_screen.dart';
 import '../main_screen/whishlist_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
+  final String? currentLocation;
+
+  BottomNavBar({this.currentLocation});
+
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
 }
@@ -15,13 +19,15 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
-  static List<Widget> _pages = [
-    HomeScreen(),
-    CartScreen(),
-    WishlistScreen(),
-    ChatScreen(),
-    ProfileScreen(),
-  ];
+  List<Widget> get _pages {
+    return [
+      HomeScreen(currentLocation: widget.currentLocation),
+      CartScreen(),
+      WishlistScreen(),
+      ChatScreen(),
+      ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -38,7 +44,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           Positioned(
             left: 20.0.w,
             right: 20.0.w,
-            bottom: 20.0.h, 
+            bottom: 20.0.h,
             child: Container(
               height: 60.h,
               decoration: BoxDecoration(

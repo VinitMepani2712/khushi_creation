@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
+import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/help_center_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/invite_friend_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/payment_screen.dart';
@@ -167,7 +169,7 @@ class ProfileScreen extends StatelessWidget {
                           endIndent: 20,
                         ),
                         Text(
-                          "Are  you sure you want to logout?",
+                          "Are you sure you want to logout?",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
@@ -189,15 +191,21 @@ class ProfileScreen extends StatelessWidget {
                                   border: Border.all(
                                       color: Color(0xff704F38), width: 2.0),
                                 ),
-                                child: Center(child: Text("Cancel")),
+                                child: Center(
+                                  child: Text("Cancel"),
+                                ),
                               ),
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SignUpScreen()));
+                              onTap: () async {
+                                await FirebaseAuth.instance.signOut();
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignInScreen(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
                               },
                               child: Container(
                                 height: 40,
@@ -223,7 +231,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.logout,
             text: 'Log out',
             isLastItem: false,
-          ),
+          )
         ],
       ),
     );

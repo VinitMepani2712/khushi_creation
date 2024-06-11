@@ -1,4 +1,5 @@
-// home_screen.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:khushi_creation/model/cloth_item_model.dart';
 import 'package:khushi_creation/model/clothing_item_model.dart';
 import 'package:khushi_creation/model/product_details_model.dart';
@@ -15,14 +16,17 @@ import 'package:slide_countdown/slide_countdown.dart';
 import '../product_details_screen/product_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? currentLocation;
+
+  const HomeScreen({Key? key, this.currentLocation}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // late HomeProviderScreen homeProviderScreen;
+  String? currentLocation;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<HomeProviderScreen>(context, listen: false);
     homeProviderScreen.installDataLoad();
     homeProviderScreen.startTimer();
+    homeProviderScreen.fetchLocation();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,24 +111,30 @@ class _HomeScreenState extends State<HomeScreen> {
             Icons.location_pin,
             color: Color(0xff704F38),
           ),
-          Text("New York, USA"),
-          Icon(
-            Icons.arrow_drop_down,
-            color: Color(0xff704F38),
-          ),
-          Spacer(),
+          SizedBox(width: 8.0),
+          if (currentLocation != null)
+            Flexible(
+              child: Text(
+                currentLocation!,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(fontSize: 14),
+              ),
+            )
+          else
+            Text("Fetching location..."),
+         Spacer(),
           CircleAvatar(
             backgroundColor: Color(0xffF1F1F1),
             child: SvgPicture.asset(
               "assets/svg/notification-bing.svg",
-              colorFilter: ColorFilter. mode(Color(0xFF74523A), BlendMode.srcIn)
+              colorFilter: ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn),
             ),
           ),
         ],
       ),
     );
   }
-
   Widget buildSearchBar({
     required BuildContext context,
     required HomeProviderScreen homeScreenProvider,
@@ -177,11 +190,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     minRadius: 25,
                     maxRadius: 25,
                     backgroundColor: Colors.transparent,
-                    child: SvgPicture.asset(
-                      "assets/svg/search-normal-1.svg",
+                    child: SvgPicture.asset("assets/svg/search-normal-1.svg",
                         colorFilter: ColorFilter.mode(
-                            Color(0xFF74523A), BlendMode.srcIn)
-                    ),
+                            Color(0xFF74523A), BlendMode.srcIn)),
                   ),
                   suffixIcon: homeScreenProvider.searchFocusNode.hasFocus
                       ? GestureDetector(
@@ -215,11 +226,9 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Color(0xff704F38),
             minRadius: 25,
             maxRadius: 25,
-            child: SvgPicture.asset(
-              "assets/svg/filter.svg",
-                colorFilter:
-                    ColorFilter.mode(Color.fromARGB(255, 255, 255, 255), BlendMode.srcIn)
-            ),
+            child: SvgPicture.asset("assets/svg/filter.svg",
+                colorFilter: ColorFilter.mode(
+                    Color.fromARGB(255, 255, 255, 255), BlendMode.srcIn)),
           ),
         ),
       ],
@@ -322,13 +331,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: CircleAvatar(
                         backgroundColor: Color(0xffF7F2ED),
-                        child: SvgPicture.asset(
-                          item.svgPath,
-                          width: 40,
-                          height: 40,
+                        child: SvgPicture.asset(item.svgPath,
+                            width: 40,
+                            height: 40,
                             colorFilter: ColorFilter.mode(
-                                Color(0xFF74523A), BlendMode.srcIn)
-                        ),
+                                Color(0xFF74523A), BlendMode.srcIn)),
                         radius: 30,
                       ),
                     ),

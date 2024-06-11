@@ -6,18 +6,16 @@ import 'package:khushi_creation/firebase_options.dart';
 import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/provider/product_details_provider.dart';
+import 'package:khushi_creation/screens/location/location_screen.dart';
 // import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:khushi_creation/screens/splash_screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 
-void main()  async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const KhushiCreation());
-
-
-
 
   runApp(
     MultiProvider(
