@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:khushi_creation/screens/auth/forgot_password_screen.dart';
 import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
+import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,32 +22,45 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  userSignIn() async {
+  Future<void> userSignIn() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+      // If successful, navigate to the home screen or another screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BottomNavBar(),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
-      if (e.code == "user-not-found") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.brown,
-            content: Text(
-              "No User Found for that Email",
-              style: AppWidget.snackbarTextStyle(),
-            ),
-          ),
-        );
-      } else if (e.code == "Wrong-password") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.brown,
-            content: Text(
-              "Please enter valid password",
-              style: AppWidget.snackbarTextStyle(),
-            ),
-          ),
-        );
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No User Found for that Email';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Please enter a valid password';
+      } else {
+        errorMessage = 'An unknown error occurred';
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            errorMessage,
+            style: AppWidget.snackbarTextStyle(),
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            'An error occurred. Please try again later.',
+            style: AppWidget.snackbarTextStyle(),
+          ),
+        ),
+      );
     }
   }
 
@@ -95,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildTitle() {
     return Text(
-      "Sign In",
+      'Sign In',
       textAlign: TextAlign.center,
       style: AppWidget.textStyle(),
     );
@@ -113,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Email"),
+        Text('Email'),
         SizedBox(height: 10.h),
         TextFormField(
           controller: emailController,
@@ -123,7 +137,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ? '\u274C Please enter a valid email address'
                   : null,
           decoration: _inputDecoration(
-            hintText: "Email",
+            hintText: 'Email',
             icon: FontAwesomeIcons.envelope,
           ),
           style: TextStyle(color: Colors.black),
@@ -136,19 +150,15 @@ class _SignInScreenState extends State<SignInScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Password"),
+        Text('Password'),
         SizedBox(height: 10.h),
         TextFormField(
           controller: passwordController,
           obscureText: !isPasswordVisible1,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Please Enter Password";
-            }
-            return null;
-          },
+          validator: (value) =>
+              value == null || value.isEmpty ? 'Please Enter Password' : null,
           decoration: _inputDecoration(
-            hintText: "Password",
+            hintText: 'Password',
             icon: isPasswordVisible1
                 ? FontAwesomeIcons.eye
                 : FontAwesomeIcons.eyeSlash,
@@ -173,10 +183,12 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
         child: Text(
-          "Forgot Password?",
+          'Forgot Password?',
           textAlign: TextAlign.end,
           style: TextStyle(
-              color: Color(0xff704F38), decoration: TextDecoration.underline),
+            color: Color(0xff704F38),
+            decoration: TextDecoration.underline,
+          ),
         ),
       ),
     );
@@ -190,7 +202,7 @@ class _SignInScreenState extends State<SignInScreen> {
             email = emailController.text;
             password = passwordController.text;
           });
-          userSignIn();
+          await userSignIn();
         }
       },
       child: Container(
@@ -204,7 +216,7 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         child: Center(
           child: Text(
-            "Sign In",
+            'Sign In',
             textAlign: TextAlign.center,
             style: TextStyle(color: Color(0xffFFFFFF)),
           ),
@@ -263,7 +275,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
             Text(
-              " Sign Up",
+              ' Sign Up',
               style: TextStyle(
                 color: Color(0xff704F38),
                 fontWeight: FontWeight.w700,
@@ -284,33 +296,25 @@ class _SignInScreenState extends State<SignInScreen> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide(
-          color: Color(
-            (0xffDEDEDE),
-          ),
+          color: Color((0xffDEDEDE)),
         ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide(
-          color: Color(
-            (0xffDEDEDE),
-          ),
+          color: Color((0xffDEDEDE)),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide(
-          color: Color(
-            (0xffDEDEDE),
-          ),
+          color: Color((0xffDEDEDE)),
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide(
-          color: Color(
-            (0xffDEDEDE),
-          ),
+          color: Color((0xffDEDEDE)),
         ),
       ),
       fillColor: Color.fromRGBO(64, 123, 255, 0.03),
