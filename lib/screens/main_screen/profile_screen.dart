@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
+import 'package:khushi_creation/screens/profile_screen/edit_profile_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/help_center_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/invite_friend_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/payment_screen.dart';
@@ -87,6 +88,12 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.person,
             text: 'Your profile',
             isLastItem: false,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: ((context) => EditProfileScreen()),
+              ),
+            ),
           ),
           ProfileMenuItem(
             icon: Icons.payment,

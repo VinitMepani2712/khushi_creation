@@ -4,6 +4,7 @@ import 'package:khushi_creation/model/product_details_model.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/screens/filter_screen/filter_screen.dart';
 import 'package:khushi_creation/screens/main_screen/filter_category_screen.dart';
+import 'package:khushi_creation/screens/product_details_screen/product_details_screen.dart';
 import 'package:khushi_creation/screens/search_screen/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,8 +12,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:khushi_creation/theme/theme_toggle_button.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
-
-import '../product_details_screen/product_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? currentLocation;
@@ -41,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Khushi Creation'),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         actions: [
           ThemeToggleButton(),
         ],
