@@ -1,21 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:khushi_creation/firebase_options.dart';
 import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/provider/product_details_provider.dart';
-import 'package:khushi_creation/screens/location/location_screen.dart';
-// import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:khushi_creation/theme/theme_provider.dart';
 import 'package:khushi_creation/screens/splash_screen/splash_screen.dart';
+import 'package:khushi_creation/theme/themes.dart';
 import 'package:provider/provider.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const KhushiCreation());
 
   runApp(
     MultiProvider(
@@ -29,8 +28,11 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => ProductDetailsProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(lightTheme),
+        ),
       ],
-      child: KhushiCreation(),
+      child: const KhushiCreation(),
     ),
   );
 }
@@ -44,18 +46,15 @@ class KhushiCreation extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          splashColor: Colors.transparent,
-          textTheme: GoogleFonts.aBeeZeeTextTheme(Theme.of(context).textTheme),
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Color.fromARGB(255, 255, 255, 255),
-          ),
-          useMaterial3: true,
-        ),
-        home: SplashScreen(),
-      ),
+      builder: (_, child) {
+        final themeProvider = Provider.of<ThemeProvider>(context);
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.themeData,
+          home: SplashScreen(),
+        );
+      },
     );
   }
 }

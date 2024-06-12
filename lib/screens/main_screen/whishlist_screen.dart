@@ -63,6 +63,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget buildCategorySectionSlider(
       BuildContext context, int index, String categoryName,
       {required HomeProviderScreen homeScreenProvider}) {
+    final brightness = Theme.of(context).brightness;
+
     return GestureDetector(
       onTap: () {
         homeScreenProvider.updateWishListCatogryData(index: index);
@@ -86,8 +88,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
               categoryName,
               style: TextStyle(
                 color: homeScreenProvider.selectedWishListCategoryIndex == index
-                    ? Colors.white
-                    : Color.fromARGB(255, 0, 0, 0),
+                    ? Color.fromARGB(255, 255, 255, 255)
+                    : (brightness == Brightness.light
+                        ? Colors.black
+                        : Color.fromARGB(255, 255, 255, 255)),
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
@@ -140,7 +144,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
             productDetailsModel: ProductDetailsModel(
                 clothes: item,
                 onFavoriteToggle: (isFavorite) {},
-                isFavorite: true, imagePaths: [], selectedImageIndex: 0), 
+                isFavorite: true,
+                imagePaths: [],
+                selectedImageIndex: 0),
           ),
         ),
       ),

@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:khushi_creation/model/cloth_item_model.dart';
 import 'package:khushi_creation/model/clothing_item_model.dart';
 import 'package:khushi_creation/model/product_details_model.dart';
@@ -10,6 +8,7 @@ import 'package:khushi_creation/screens/search_screen/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:khushi_creation/theme/theme_toggle_button.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
@@ -37,64 +36,64 @@ class _HomeScreenState extends State<HomeScreen> {
     homeProviderScreen.fetchLocation();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: buildBody(context),
-    );
-  }
-
-  Widget buildBody(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(top: 5.0.h, bottom: 80.h),
-          child: Column(
-            children: [
-              Consumer<HomeProviderScreen>(
-                builder: (context, homeScreenProvider, child) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0.w, right: 10.w),
-                        child: Column(
-                          children: [
-                            buildLocationTile(),
-                            SizedBox(height: 5.h),
-                            buildSearchBar(
-                                context: context,
-                                homeScreenProvider: homeScreenProvider),
-                            SizedBox(height: 20.h),
-                            buildImageSlider(
-                                context: context,
-                                homeScreenProvider: homeScreenProvider),
-                            SizedBox(height: 10.h),
-                            buildIndicator(
-                                context: context,
-                                homeScreenProvider: homeScreenProvider),
-                            SizedBox(height: 15.h),
-                            buildCategorySection(context),
-                            SizedBox(height: 10.h),
-                            buildSalesTitle(),
-                            SizedBox(height: 10.h),
-                            //
-                          ],
+      appBar: AppBar(
+        title: Text('Khushi Creation'),
+        actions: [
+          ThemeToggleButton(),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 80.h),
+            child: Column(
+              children: [
+                Consumer<HomeProviderScreen>(
+                  builder: (context, homeScreenProvider, child) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10.0.w, right: 10.w),
+                          child: Column(
+                            children: [
+                              buildLocationTile(),
+                              SizedBox(height: 5.h),
+                              buildSearchBar(
+                                  context: context,
+                                  homeScreenProvider: homeScreenProvider),
+                              SizedBox(height: 20.h),
+                              buildImageSlider(
+                                  context: context,
+                                  homeScreenProvider: homeScreenProvider),
+                              SizedBox(height: 10.h),
+                              buildIndicator(
+                                  context: context,
+                                  homeScreenProvider: homeScreenProvider),
+                              SizedBox(height: 15.h),
+                              buildCategorySection(context),
+                              SizedBox(height: 10.h),
+                              buildSalesTitle(),
+                              SizedBox(height: 10.h),
+                              //
+                            ],
+                          ),
                         ),
-                      ),
-                      buildCategoryItems(
-                          context: context,
-                          homeScreenProvider: homeScreenProvider),
-                      SizedBox(height: 20.h),
-                      buildClothItems(
-                          context: context,
-                          homeScreenProvider: homeScreenProvider),
-                    ],
-                  );
-                },
-              ),
-            ],
+                        buildCategoryItems(
+                            context: context,
+                            homeScreenProvider: homeScreenProvider),
+                        SizedBox(height: 20.h),
+                        buildClothItems(
+                            context: context,
+                            homeScreenProvider: homeScreenProvider),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -104,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildLocationTile() {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text("Location"),
+      title: Text("Your Location"),
       subtitle: Row(
         children: [
           Icon(
@@ -123,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           else
             Text("Fetching location..."),
-         Spacer(),
+          Spacer(),
           CircleAvatar(
             backgroundColor: Color(0xffF1F1F1),
             child: SvgPicture.asset(
@@ -135,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget buildSearchBar({
     required BuildContext context,
     required HomeProviderScreen homeScreenProvider,
@@ -407,6 +407,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildCategorySectionSlider(
       BuildContext context, int index, String categoryName,
       {required HomeProviderScreen homeScreenProvider}) {
+    final brightness = Theme.of(context).brightness;
+
     return GestureDetector(
       onTap: () {
         homeScreenProvider.updateCatogryData(index: index);
@@ -430,8 +432,10 @@ class _HomeScreenState extends State<HomeScreen> {
               categoryName,
               style: TextStyle(
                 color: homeScreenProvider.selectedCategoryIndex == index
-                    ? Colors.white
-                    : Color.fromARGB(255, 0, 0, 0),
+                    ? Color.fromARGB(255, 255, 255, 255)
+                    : (brightness == Brightness.light
+                        ? Colors.black
+                        : Color.fromARGB(255, 255, 255, 255)),
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
