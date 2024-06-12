@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../model/friend_model.dart';
+import 'package:contacts_service/contacts_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InviteFriendsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildAppBar(context),
-          _buildFriendListView(context),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildAppBar(context),
+            _buildFriendListView(context),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -59,35 +60,74 @@ class InviteFriendsScreen extends StatelessWidget {
   }
 
   Widget _buildFriendListView(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      child: ListView.separated(
-        itemCount: inviteFriendsListModel.length,
-        separatorBuilder: (context, index) => const Divider(),
-        itemBuilder: (context, index) {
-          final friend = inviteFriendsListModel[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage(friend.image),
-            ),
-            title: Text(friend.name),
-            subtitle: Text(friend.phone),
-            trailing: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF704F38),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                'Invite',
-                style: TextStyle(color: Colors.white),
-              ),
+    return FutureBuilder(
+      future: ContactsService.getContacts(),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error loading contacts'),
+          );
+        } else if (snapshot.data == null) {
+          return Center(
+            child: Text('No contacts available'),
+          );
+        } else if (snapshot.data == null) {
+          print('Snapshot data is null');
+          return Center(
+            child: Text('No contacts available'),
+          );
+        } else {
+          Iterable<Contact> contacts = snapshot.data as Iterable<Contact>;
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            child: ListView.separated(
+              itemCount: contacts.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) {
+                final Contact contact = contacts.elementAt(index);
+                String phoneNumber = contact.phones!.isNotEmpty
+                    ? contact.phones!.first.value!
+                    : 'No phone number';
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/default_avatar.png'),
+                  ),
+                  title: Text(contact.displayName ?? 'No name'),
+                  subtitle: Text(phoneNumber),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      _inviteContact(phoneNumber);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF704F38),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      'Invite',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
+        }
+      },
     );
+  }
+
+  void _inviteContact(String phoneNumber) async {
+    // You can replace 'sms' with 'whatsapp' for using WhatsApp
+    String uri = 'sms:$phoneNumber?body=Check out this cool app!';
+    if (await canLaunch(uri)) {
+      await launch(uri);
+    } else {
+      // Handle error
+      print('Error launching SMS app');
+    }
   }
 }

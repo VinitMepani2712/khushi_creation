@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-Future<void> _navigateToNextScreen() async {
+  Future<void> _navigateToNextScreen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
@@ -44,8 +44,7 @@ Future<void> _navigateToNextScreen() async {
       );
     } else {
       User? user = FirebaseAuth.instance.currentUser;
-      if (user != null && user.emailVerified) {
-      
+      if (user != null && !user.isAnonymous && user.emailVerified) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => BottomNavBar()),
@@ -58,6 +57,7 @@ Future<void> _navigateToNextScreen() async {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

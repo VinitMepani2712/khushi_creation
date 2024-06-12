@@ -22,14 +22,19 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoggingIn = false;
 
   Future<void> userSignIn() async {
+    setState(() {
+      _isLoggingIn = true;
+    });
+
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -37,13 +42,27 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+      String errorMessage = '';
+
+      if (e.code == 'user-not-found') {
+        errorMessage = "User id is not registered";
+      } else if (e.code == 'wrong-password') {
+        errorMessage = "Your password is wrong! Please try again";
       }
-    } catch (e) {
-      print(e);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            errorMessage,
+            style: AppWidget.snackbarTextStyle(),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoggingIn = false;
+      });
     }
   }
 
@@ -181,13 +200,12 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildSignInButton() {
     return GestureDetector(
       onTap: () async {
-       
         if (_formKey.currentState!.validate()) {
           setState(() {
             email = emailController.text;
             password = passwordController.text;
           });
-         
+
           await userSignIn();
         }
       },
@@ -201,11 +219,15 @@ class _SignInScreenState extends State<SignInScreen> {
           border: Border.all(color: const Color(0xffDEDEDE)),
         ),
         child: Center(
-          child: Text(
-            'Sign In',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xffFFFFFF)),
-          ),
+          child: _isLoggingIn
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Text(
+                  'Sign In',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xffFFFFFF)),
+                ),
         ),
       ),
     );

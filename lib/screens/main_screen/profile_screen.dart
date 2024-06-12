@@ -1,35 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:khushi_creation/provider/profile_provider.dart';
 import 'package:khushi_creation/screens/profile_screen/edit_profile_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/help_center_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/invite_friend_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/payment_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/privacy_policy_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../profile_screen/setting_screen.dart';
+import 'package:khushi_creation/screens/profile_screen/setting_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: ListView(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        children: [
-          SizedBox(height: 20),
-          _buildProfileHeader(),
-          SizedBox(height: 10),
-          Center(
-            child: Text(
-              'Vinit Mepani',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          SizedBox(height: 20),
-          _buildMenuItems(context),
-        ],
+      body: Consumer<ProfileProvider>(
+        builder: (context, profileProvider, child) {
+          return ListView(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            children: [
+              SizedBox(height: 20),
+              _buildProfileHeader(context, profileProvider),
+              SizedBox(height: 10),
+              Center(
+                child: Text(
+                  profileProvider.name ?? '',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 20),
+              _buildMenuItems(context),
+            ],
+          );
+        },
       ),
     );
   }
@@ -39,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       title: Padding(
-        padding: EdgeInsets.only(left: 20.0.w, top: 40.0.h, right: 20.0.w),
+        padding: EdgeInsets.only(left: 20.0, top: 40.0, right: 20.0),
         child: Text(
           textAlign: TextAlign.center,
           "Profile",
@@ -49,25 +53,35 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(
+      BuildContext context, ProfileProvider profileProvider) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Center(
           child: CircleAvatar(
             radius: 55,
-            backgroundImage:
-                AssetImage('assets/images/welcome_screen/left_side.jpg'),
+            backgroundImage: profileProvider.image == null
+                ? NetworkImage(profileProvider.photoURL)
+                : FileImage(profileProvider.image!),
           ),
         ),
         Positioned(
           top: 75,
           left: 180,
-          child: CircleAvatar(
-            backgroundColor: Color(0xff704F38),
-            child: Icon(
-              Icons.edit,
-              color: Colors.white,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditProfileScreen()),
+              );
+            },
+            child: CircleAvatar(
+              backgroundColor: Color(0xff704F38),
+              child: Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
             ),
           ),
         )
@@ -200,16 +214,16 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                             GestureDetector(
-                              // onTap: () async {
-                              //   await FirebaseAuth.instance.signOut();
-                              //   Navigator.pushAndRemoveUntil(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) => SignInScreen(),
-                              //     ),
-                              //     (Route<dynamic> route) => false,
-                              //   );
-                              // },
+                              onTap: () async {
+                                await FirebaseAuth.instance.signOut();
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignInScreen(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
+                              },
                               child: Container(
                                 height: 40,
                                 width: 150,

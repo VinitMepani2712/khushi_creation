@@ -8,7 +8,7 @@ class ProfileProvider with ChangeNotifier {
   User? user;
   File? _image;
   String? _name;
-  int? _phoneNumber;
+  String? _mobileNumber;
   String? _gender;
   String? _dateOfBirth;
   final picker = ImagePicker();
@@ -17,28 +17,33 @@ class ProfileProvider with ChangeNotifier {
 
   ProfileProvider() {
     user = _auth.currentUser;
-    _name = user?.displayName;
+    // name = user?.displayName;
   }
 
   String? get name => _name;
-
   File? get image => _image;
   String get email => user?.email ?? '';
   String get photoURL => user?.photoURL ?? 'https://via.placeholder.com/150';
   String get userId => user?.uid ?? '';
- 
+  String? get phoneNumber => _mobileNumber;
+  String? get gender => _gender;
+  String? get dateOfBirth => _dateOfBirth;
 
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       _image = File(pickedFile.path);
       notifyListeners();
     }
   }
 
-    void updatePhoneNumber(int phoneNumber) {
-    phoneNumber = phoneNumber;
+   void updateName(String name) {
+    _name = name;
+    notifyListeners();
+  }
+
+  void updatePhoneNumber(String phoneNumber) {
+    _mobileNumber = phoneNumber;
     notifyListeners();
   }
 
@@ -68,7 +73,7 @@ class ProfileProvider with ChangeNotifier {
   Future<void> updateEmail(String email) async {
     try {
       await user!.verifyBeforeUpdateEmail(email);
-    await user!.sendEmailVerification();
+      await user!.sendEmailVerification();
       notifyListeners();
     } catch (e) {
       print(e);
@@ -95,6 +100,10 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
+  void updateMobileNumber(String mobileNumber) {
+    // Update the mobile number here
+  }
+
   Future<void> deleteAccount() async {
     try {
       await user!.delete();
@@ -104,3 +113,16 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 }
+
+
+
+
+
+
+  
+
+  
+
+
+
+

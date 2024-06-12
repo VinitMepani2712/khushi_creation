@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:khushi_creation/screens/auth/profile_screen.dart';
 import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:khushi_creation/screens/location/manual_location_screen.dart';
@@ -15,6 +16,7 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   String? currentLocation;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -95,13 +97,17 @@ class _LocationScreenState extends State<LocationScreen> {
             color: Color(0xff704F38),
             border: Border.all(color: const Color(0xffDEDEDE)),
           ),
-          child: Text(
-            'Allow Location Access',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-          ),
+          child: _isLoading
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Text(
+                  'Allow Location Access',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
         ),
       ),
     );
@@ -126,6 +132,10 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     var permission = await Permission.location.request();
     if (permission.isGranted) {
       try {
@@ -144,26 +154,32 @@ class _LocationScreenState extends State<LocationScreen> {
 
         // await _saveLocationToFirestore(currentLocation!);
 
-        await Future.delayed(Duration(seconds: 3));
-        Navigator.pushReplacement(
+        await Future.delayed(
+          Duration(milliseconds: 300),
+        );
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                BottomNavBar(currentLocation: currentLocation),
+            builder: (context) => ComplatedProfileScreen(),
           ),
         );
       } catch (e) {
         setState(() {
           currentLocation = 'Failed to get location: $e';
         });
+      } finally {
+        setState(() {
+          _isLoading =
+              false;
+        });
       }
     } else {
       setState(() {
         currentLocation = 'Location permission denied';
+        _isLoading = false; 
       });
     }
   }
-
   // Future<void> _saveLocationToFirestore(String location) async {
   //   User? user = FirebaseAuth.instance.currentUser;
   //   if (user != null) {

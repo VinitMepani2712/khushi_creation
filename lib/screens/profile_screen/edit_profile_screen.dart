@@ -24,9 +24,8 @@ class EditProfileScreen extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 50,
                         backgroundImage: profileProvider.image == null
-                            ? NetworkImage(profileProvider.photoURL)
-                            : FileImage(profileProvider.image!)
-                                as ImageProvider,
+                            ? AssetImage(profileProvider.photoURL)
+                            : FileImage(profileProvider.image!),
                       ),
                     ),
                   ),
@@ -77,11 +76,6 @@ class EditProfileScreen extends StatelessWidget {
           subtitle: Text(profileProvider.name ?? ''),
           onTap: () {},
         ),
-        ListTile(
-          title: Text('Username'),
-          subtitle: Text(profileProvider.user?.displayName ?? ''),
-          onTap: () {},
-        ),
       ],
     );
   }
@@ -102,6 +96,14 @@ class EditProfileScreen extends StatelessWidget {
           title: Text('E-mail'),
           subtitle: Text(profileProvider.email),
         ),
+        ListTile(
+          title: Text('Phone Number'),
+          subtitle: Text(profileProvider.phoneNumber ?? ''),
+        ),
+        ListTile(
+          title: Text('Gender'),
+          subtitle: Text(profileProvider.gender ?? ''),
+        ),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -118,18 +120,6 @@ class EditProfileScreen extends StatelessWidget {
                 },
                 child: Text(
                   'Change Email',
-                  style: AppWidget.editProfileScreenStyle(),
-                ),
-              ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  profileProvider.updateProfile(
-                      email: 'new@email.com', password: 'newPassword');
-                },
-                child: Text(
-                  'Save Changes',
                   style: AppWidget.editProfileScreenStyle(),
                 ),
               ),

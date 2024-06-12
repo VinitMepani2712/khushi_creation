@@ -10,7 +10,9 @@ import '../main_screen/whishlist_screen.dart';
 class BottomNavBar extends StatefulWidget {
   final String? currentLocation;
 
-  BottomNavBar({this.currentLocation});
+  BottomNavBar({
+    this.currentLocation,
+  });
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();

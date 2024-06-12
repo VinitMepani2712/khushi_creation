@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
-import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:khushi_creation/screens/location/location_screen.dart';
 import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:flutter/material.dart';
@@ -27,87 +27,112 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isSignIn = false; 
 
-  void registration() async {
-    if (!isChecked) {
+Future<void> registration() async {
+    setState(() {
+      _isSignIn = true;
+    });
+
+    try {
+      if (!isChecked) {
+        throw "You must agree to the Terms & Conditions";
+      }
+
+      if (password == null || email == null) {
+        throw "Email and Password cannot be empty";
+      }
+
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.brown,
           content: Text(
-            "You must agree to the Terms & Conditions",
+            "Registered Successfully",
             style: AppWidget.snackbarTextStyle(),
           ),
         ),
       );
-      return;
-    }
 
-    if (password != null && email != null) {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.brown,
-            content: Text(
-              "Registered Successfully",
-              style: AppWidget.snackbarTextStyle(),
-            ),
-          ),
-        );
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LocationScreen(),
-          ),
-        );
-      } on FirebaseException catch (e) {
-        if (e.code == "weak-password") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.brown,
-              content: Text(
-                "Provided password is not greater than 8 characters",
-                style: AppWidget.snackbarTextStyle(),
-              ),
-            ),
-          );
-        } else if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.brown,
-              content: Text(
-                "Account is already in use, Please log in",
-                style: AppWidget.snackbarTextStyle(),
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.brown,
-              content: Text(
-                "An error occurred: ${e.message}",
-                style: AppWidget.snackbarTextStyle(),
-              ),
-            ),
-          );
-        }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LocationScreen(),
+        ),
+      );
+    } on FirebaseException catch (e) {
+      if (e.code == "weak-password") {
+        throw "Provided password is not greater than 8 characters";
+      } else if (e.code == "email-already-in-use") {
+        throw "Account is already in use, Please log in";
+      } else {
+        throw "An error occurred: ${e.message}";
       }
-    } else {
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.brown,
           content: Text(
-            "Email and Password cannot be empty",
+            error.toString(),
             style: AppWidget.snackbarTextStyle(),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSignIn =
+            false; 
+      });
+    }
+  }
+
+Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            "Registered Successfully",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LocationScreen(),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "Registration Failed: ${e.toString()}",
+            style: TextStyle(color: Colors.white),
           ),
         ),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
@@ -139,9 +164,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     indent: 20.w,
                     endIndent: 20.w,
                   ),
-                  _buildSocialIcons(),
+                  _buildSocialIcons(context),
                   SizedBox(height: 15.h),
-                  _buildSignInText(),
+                  _buildSignInText(context),
                 ],
               ),
             ),
@@ -318,7 +343,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           border: Border.all(color: const Color(0xffDEDEDE)),
         ),
         child: Center(
-          child: Text(
+          child: _isSignIn
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Text(
             "Sign Up",
             textAlign: TextAlign.center,
             style: TextStyle(color: Color(0xffFFFFFF)),
@@ -328,7 +357,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSocialIcons() {
+Widget _buildSocialIcons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -336,41 +365,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'assets/svg/apple.svg',
           20.0.w,
           30.0.h,
+          () {
+            // Implement Apple Sign-In functionality here
+          },
         ),
         _buildSocialIcon(
           'assets/svg/google.svg',
           20.0.w,
           30.0.h,
+          () {
+            signInWithGoogle(context); // Pass context to signInWithGoogle
+          },
         ),
         _buildSocialIcon(
           'assets/svg/facebook.svg',
           20.0.w,
           30.0.h,
+          () {
+            // Implement Facebook Sign-In functionality here
+          },
         ),
       ],
     );
   }
 
-  Widget _buildSocialIcon(String assetName, double width, double height) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: CircleAvatar(
-        minRadius: 25,
-        maxRadius: 25,
-        backgroundColor: Colors.transparent,
-        child: SvgPicture.asset(
-          assetName,
-          width: width, 
-          height: height, 
+  Widget _buildSocialIcon(
+      String assetName, double width, double height, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: CircleAvatar(
+          minRadius: 25,
+          maxRadius: 25,
+          backgroundColor: Colors.transparent,
+          child: SvgPicture.asset(
+            assetName,
+            width: width,
+            height: height,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSignInText() {
+  Widget _buildSignInText(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushReplacement(
