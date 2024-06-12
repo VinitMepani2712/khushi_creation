@@ -33,5 +33,11 @@ class AppWidget {
     );
   }
 
-
+  static TextStyle editProfileScreenStyle() {
+    return const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: Colors.amber,
+    );
+  }
 }

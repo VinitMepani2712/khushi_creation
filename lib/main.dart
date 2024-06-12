@@ -5,11 +5,11 @@ import 'package:khushi_creation/firebase_options.dart';
 import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/provider/product_details_provider.dart';
+import 'package:khushi_creation/provider/profile_provider.dart';
 import 'package:khushi_creation/theme/theme_provider.dart';
 import 'package:khushi_creation/screens/splash_screen/splash_screen.dart';
 import 'package:khushi_creation/theme/themes.dart';
 import 'package:provider/provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(lightTheme),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider(),
         ),
       ],
       child: const KhushiCreation(),

@@ -1,84 +1,63 @@
+// edit_profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:provider/provider.dart';
 import 'package:khushi_creation/provider/profile_provider.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ProfileProvider(),
-      child: Consumer<ProfileProvider>(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Profile'),
+      ),
+      body: Consumer<ProfileProvider>(
         builder: (context, profileProvider, child) {
-          _emailController.text = profileProvider.email;
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Profile'),
-            ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    GestureDetector(
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: GestureDetector(
                       onTap: () => profileProvider.pickImage(),
                       child: CircleAvatar(
-                        radius: 75,
+                        radius: 50,
                         backgroundImage: profileProvider.image == null
                             ? NetworkImage(profileProvider.photoURL)
                             : FileImage(profileProvider.image!)
                                 as ImageProvider,
                       ),
                     ),
-                    SizedBox(height: 20),
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(labelText: 'Email'),
-                    ),
-                    SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                        onPressed: () =>
-                            _showChangeEmailDialog(context, profileProvider),
-                        child: Text('Change Email'),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(labelText: 'New Password'),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await profileProvider.saveChanges(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Changes saved')),
-                        );
-                      },
+                  ),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => profileProvider.pickImage(),
                       child: Text(
-                        'Save Changes',
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Color.fromARGB(255, 255, 255, 255)
-                                  : Colors.black,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.brown,
+                        'Change Profile Picture',
+                        style: AppWidget.editProfileScreenStyle(),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 10),
+                  Divider(
+                    indent: 5,
+                    endIndent: 5,
+                    color: const Color.fromARGB(255, 235, 234, 231),
+                  ),
+                  SizedBox(height: 10),
+                  _buildProfileInfoSection(context, profileProvider),
+                  SizedBox(height: 10),
+                  Divider(
+                    indent: 5,
+                    endIndent: 5,
+                    color: const Color.fromARGB(255, 235, 234, 231),
+                  ),
+                  SizedBox(height: 10),
+                  _buildPersonalInfoSection(context, profileProvider),
+                  SizedBox(height: 20),
+                ],
               ),
             ),
           );
@@ -87,33 +66,116 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showChangeEmailDialog(
+  Widget _buildProfileInfoSection(
       BuildContext context, ProfileProvider profileProvider) {
-    final _newEmailController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Change Email'),
-          content: TextField(
-            controller: _newEmailController,
-            decoration: InputDecoration(labelText: 'New Email'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                profileProvider.updateEmail(_newEmailController.text);
-                Navigator.of(context).pop();
-              },
-              child: Text('Update'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Profile Information',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ListTile(
+          title: Text('Name'),
+          subtitle: Text(profileProvider.name ?? ''),
+          onTap: () {},
+        ),
+        ListTile(
+          title: Text('Username'),
+          subtitle: Text(profileProvider.user?.displayName ?? ''),
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPersonalInfoSection(
+      BuildContext context, ProfileProvider profileProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Personal Information',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ListTile(
+          title: Text('User ID'),
+          subtitle: Text(profileProvider.userId),
+          trailing: Icon(Icons.lock),
+        ),
+        ListTile(
+          title: Text('E-mail'),
+          subtitle: Text(profileProvider.email),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: TextButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) =>
+                        _buildChangeEmailBottomSheet(context, profileProvider),
+                  );
+                },
+                child: Text(
+                  'Change Email',
+                  style: AppWidget.editProfileScreenStyle(),
+                ),
+              ),
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  profileProvider.updateProfile(
+                      email: 'new@email.com', password: 'newPassword');
+                },
+                child: Text(
+                  'Save Changes',
+                  style: AppWidget.editProfileScreenStyle(),
+                ),
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChangeEmailBottomSheet(
+      BuildContext context, ProfileProvider profileProvider) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Change Email',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20),
+          TextField(
+            decoration: InputDecoration(labelText: 'New Email'),
+            onChanged: (value) {
+              profileProvider.updateEmail(value);
+            },
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              profileProvider.updateEmail(profileProvider.email);
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Update Email',
+              style: AppWidget.editProfileScreenStyle(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

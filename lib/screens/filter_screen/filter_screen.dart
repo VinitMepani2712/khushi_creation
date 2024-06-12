@@ -69,7 +69,13 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
           ),
-          Card(
+          Container(
+            decoration: BoxDecoration(
+                color: Color.fromARGB(198, 235, 230, 230),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                )),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(
@@ -80,7 +86,9 @@ class _FilterScreenState extends State<FilterScreen> {
                     child: Text(
                       'Reset Filter',
                       style: TextStyle(
-                        color: Color(0xff704F38),
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.brown
+                            : const Color.fromARGB(255, 255, 255, 255),
                       ),
                     ),
                     style: ElevatedButton.styleFrom(

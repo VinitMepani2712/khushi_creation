@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/edit_profile_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/help_center_screen.dart';
@@ -7,7 +6,6 @@ import 'package:khushi_creation/screens/profile_screen/invite_friend_screen.dart
 import 'package:khushi_creation/screens/profile_screen/payment_screen.dart';
 import 'package:khushi_creation/screens/profile_screen/privacy_policy_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../profile_screen/setting_screen.dart';
@@ -16,16 +14,16 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _buildAppBar(context),
       body: ListView(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         children: [
-          _buildAppBar(context),
           SizedBox(height: 20),
           _buildProfileHeader(),
           SizedBox(height: 10),
           Center(
             child: Text(
-              'Esther Howard',
+              'Vinit Mepani',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
@@ -36,20 +34,18 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 20.0.w, top: 40.0.h, right: 20.0.w),
-          child: Center(
-            child: Text(
-              textAlign: TextAlign.center,
-              "Profile",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      title: Padding(
+        padding: EdgeInsets.only(left: 20.0.w, top: 40.0.h, right: 20.0.w),
+        child: Text(
+          textAlign: TextAlign.center,
+          "Profile",
+          style: TextStyle(fontSize: 20),
         ),
-      ],
+      ),
     );
   }
 
