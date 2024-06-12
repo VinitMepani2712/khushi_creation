@@ -16,19 +16,26 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
 
   @override
   Widget build(BuildContext context) {
+    Brightness brightness =
+        Theme.of(context).brightness; // Determine brightness
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         body: Column(
           children: [
             SizedBox(height: 20.h),
-            _buildAppBar(context),
+            _buildAppBar(context, brightness),
             SizedBox(height: 20.h),
-            _buildSearchBar(),
+            _buildSearchBar(brightness),
             TabBar(
-              indicatorColor: Color(0xff704F38),
+              indicatorColor: brightness == Brightness.dark
+                  ? Colors.white
+                  : Color(0xff704F38),
               indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: Color(0xff704F38),
+              labelColor: brightness == Brightness.dark
+                  ? Colors.white
+                  : Color(0xff704F38),
               indicatorPadding: EdgeInsets.only(left: 10.w, right: 10.w),
               tabs: [
                 Tab(text: 'FAQ'),
@@ -39,8 +46,8 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildFAQTab(),
-                  _buildContactUsTab(),
+                  _buildFAQTab(brightness),
+                  _buildContactUsTab(brightness),
                 ],
               ),
             ),
@@ -50,7 +57,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context, Brightness brightness) {
     return Row(
       children: [
         Padding(
@@ -63,7 +70,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color(0xffE6E6E6),
+                      color: brightness == Brightness.dark
+                          ? Colors.white
+                          : Color(0xffE6E6E6),
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(100),
@@ -74,7 +83,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                     backgroundColor: Colors.transparent,
                     child: Icon(
                       Icons.arrow_back,
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                 ),
@@ -91,7 +102,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(Brightness brightness) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0.w),
       child: Row(
@@ -133,15 +144,18 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                   minRadius: 25,
                   maxRadius: 25,
                   backgroundColor: Colors.transparent,
-                  child: SvgPicture.asset(
-                    "assets/svg/search-normal-1.svg",
-                      colorFilter:
-                          ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn)
-                  ),
+                  child: SvgPicture.asset("assets/svg/search-normal-1.svg",
+                      colorFilter: ColorFilter.mode(
+                          brightness == Brightness.dark
+                              ? Colors.white
+                              : Color(0xFF74523A),
+                          BlendMode.srcIn)),
                 ),
                 hintText: 'Search',
-                hintStyle:
-                    TextStyle(color: const Color.fromARGB(255, 199, 199, 199)),
+                hintStyle: TextStyle(
+                    color: brightness == Brightness.dark
+                        ? Colors.white
+                        : Color.fromARGB(255, 199, 199, 199)),
               ),
             ),
           ),
@@ -150,7 +164,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
     );
   }
 
-  Widget _buildFAQTab() {
+  Widget _buildFAQTab(Brightness brightness) {
     return ListView.separated(
       separatorBuilder: (context, index) => SizedBox(height: 20),
       itemCount: expansionTileDataListFAQModel.length,
@@ -161,13 +175,15 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Color(0xffE6E6E),
+                color: Color.fromARGB(255, 218, 214, 214),
                 width: 2,
               ),
             ),
             child: ExpansionTile(
               iconColor: Color(0xff704F38),
-              collapsedBackgroundColor: Color.fromARGB(255, 255, 255, 255),
+              collapsedBackgroundColor: brightness == Brightness.light
+                  ? Colors.white
+                  : Color.fromARGB(255, 0, 0, 0),
               collapsedShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
@@ -177,10 +193,12 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
               title: Text(
                 expansionTileDataListFAQModel[index].title,
               ),
-              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: brightness == Brightness.light
+                  ? Color.fromARGB(255, 255, 255, 255)
+                  : Color.fromARGB(255, 0, 0, 0),
               children: [
                 Divider(
-                  color: Color(0xffE6EE6),
+                  color: Color.fromARGB(255, 224, 219, 224),
                   indent: 20,
                   endIndent: 20,
                 ),
@@ -188,7 +206,11 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                   padding: EdgeInsets.symmetric(horizontal: 20.0.w),
                   child: Text(
                     expansionTileDataListFAQModel[index].description,
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black),
                   ),
                 ),
               ],
@@ -205,7 +227,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
     );
   }
 
-  Widget _buildContactUsTab() {
+  Widget _buildContactUsTab(Brightness brightness) {
     return ListView.separated(
       separatorBuilder: (context, index) => SizedBox(height: 20),
       itemCount: expansionTileDataListContactModel.length,
@@ -216,13 +238,15 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Color(0xffE6E6E),
+                color: Color.fromARGB(255, 218, 214, 214),
                 width: 2,
               ),
             ),
             child: ExpansionTile(
               iconColor: Color(0xff704F38),
-              collapsedBackgroundColor: Color.fromARGB(255, 255, 255, 255),
+              collapsedBackgroundColor: brightness == Brightness.light
+                  ? Colors.white
+                  : Color.fromARGB(255, 0, 0, 0),
               collapsedShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
@@ -239,19 +263,25 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                   Wrap(
                     children: [
                       Text(
+                        expansionTileDataListContactModel[index].title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        expansionTileDataListContactModel[index].title,
+                        style: TextStyle(
+                          color: brightness == Brightness.light
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Color.fromARGB(255, 255, 255, 255),
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-              collapsedIconColor: Colors.transparent,
+              backgroundColor: brightness == Brightness.light
+                  ? Color.fromARGB(255, 255, 255, 255)
+                  : Color.fromARGB(255, 0, 0, 0),
               children: [
                 Divider(
-                  color: Color(0xffE6EE6),
+                  color: Color.fromARGB(255, 224, 219, 224),
                   indent: 20,
                   endIndent: 20,
                 ),
@@ -259,7 +289,11 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                   padding: EdgeInsets.symmetric(horizontal: 20.0.w),
                   child: Text(
                     expansionTileDataListContactModel[index].description,
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black),
                   ),
                 ),
               ],

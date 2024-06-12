@@ -15,10 +15,13 @@ class CartScreen extends StatelessWidget {
         builder: (context, cartProvider, child) {
           return cartProvider.items.isEmpty
               ? Center(
-                  child: Text(
-                    "Looks like your cart is currently empty. Time to fill it up with goodies! 🛒",
-                    style: TextStyle(fontSize: 18.0),
-                    textAlign: TextAlign.center,
+                  child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      "Looks like your cart is currently empty. Time to fill it up with goodies! 🛒",
+                      style: TextStyle(fontSize: 18.0),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 )
               : ListView.builder(
