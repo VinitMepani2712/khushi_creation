@@ -75,7 +75,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(25),
                   topRight: Radius.circular(25),
-                )),
+                ),),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(

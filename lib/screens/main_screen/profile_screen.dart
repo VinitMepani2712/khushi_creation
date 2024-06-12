@@ -200,16 +200,16 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () async {
-                                await FirebaseAuth.instance.signOut();
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignInScreen(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              },
+                              // onTap: () async {
+                              //   await FirebaseAuth.instance.signOut();
+                              //   Navigator.pushAndRemoveUntil(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) => SignInScreen(),
+                              //     ),
+                              //     (Route<dynamic> route) => false,
+                              //   );
+                              // },
                               child: Container(
                                 height: 40,
                                 width: 150,

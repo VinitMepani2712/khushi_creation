@@ -25,18 +25,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> userSignIn() async {
     try {
-      final usercredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            "Log in Successfully",
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -44,27 +37,13 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.brown,
-            content: Text(
-              "No user found for that email.",
-              style: AppWidget.snackbarTextStyle(),
-            ),
-          ),
-        );
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.brown,
-            content: Text(
-              'Wrong password provided for that user.',
-              style: AppWidget.snackbarTextStyle(),
-            ),
-          ),
-        );
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
       }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -202,11 +181,13 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildSignInButton() {
     return GestureDetector(
       onTap: () async {
+       
         if (_formKey.currentState!.validate()) {
           setState(() {
             email = emailController.text;
             password = passwordController.text;
           });
+         
           await userSignIn();
         }
       },

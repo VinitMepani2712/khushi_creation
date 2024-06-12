@@ -10,11 +10,13 @@ class CartScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Cart'),
-         backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
       body: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
+          final brightness = Theme.of(context).brightness;
+
           return cartProvider.items.isEmpty
               ? Center(
                   child: Padding(
@@ -44,7 +46,9 @@ class CartScreen extends StatelessWidget {
             return Container(
               padding: EdgeInsets.only(bottom: 90.0.h),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Color.fromARGB(255, 255, 255, 255)
+                    : Color.fromARGB(255, 0, 0, 0),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
@@ -95,8 +99,10 @@ class CartScreen extends StatelessWidget {
                                     ),
                                     hintText: 'Promo Code',
                                     hintStyle: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 199, 199, 199),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Color.fromARGB(255, 255, 255, 255)
+                                          : Color.fromARGB(255, 0, 0, 0),
                                     ),
                                   ),
                                 ),
@@ -135,12 +141,24 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Sub Total:',
-                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                         Text(
                           '\u{20B9}${cartProvider.subtotal.toStringAsFixed(2)}',
                           style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                       ],
                     ),
@@ -150,12 +168,24 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Delivery Fee:',
-                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                         Text(
                           '\u{20B9}${cartProvider.deliveryFee.toStringAsFixed(2)}',
                           style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                       ],
                     ),
@@ -165,12 +195,24 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Discount:',
-                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                         Text(
                           '-\u{20B9}${cartProvider.discount.toStringAsFixed(2)}',
                           style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                       ],
                     ),
@@ -180,12 +222,24 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Total Cost:',
-                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                         Text(
                           '\u{20B9}${cartProvider.totalPrice.toStringAsFixed(2)}',
                           style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromARGB(255, 255, 255, 255)
+                                    : Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                       ],
                     ),
@@ -378,7 +432,12 @@ class CartScreen extends StatelessWidget {
                     SizedBox(height: 5.0),
                     Text(
                       'Color: ${cartItem.clothes.selectedColor?.name}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Color.fromARGB(255, 255, 255, 255)
+                            : Color.fromARGB(255, 0, 0, 0),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -407,7 +466,9 @@ class CartScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           CircleAvatar(
-            backgroundColor: Color(0xffEDEDED),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Color.fromARGB(255, 209, 200, 200)
+                : Color.fromARGB(255, 240, 235, 235),
             child: IconButton(
               icon: Icon(Icons.remove),
               onPressed: () async {
@@ -426,7 +487,12 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           SizedBox(width: 5.0),
-          Text(cartItem.quantity.toString()),
+          Text(
+            cartItem.quantity.toString(),
+            style: TextStyle(
+              color: Color.fromARGB(255, 0, 0, 0),
+            ),
+          ),
           SizedBox(width: 10.0),
           CircleAvatar(
             backgroundColor: Color(0xff704F38),

@@ -254,6 +254,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget _buildSizeSelector() {
     return Consumer<ProductDetailsProvider>(
       builder: (context, productDetailsProvider, child) {
+        final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Padding(
@@ -269,15 +271,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     label: Text(
                       size.toString().split('.').last,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
+                        color: isSelected
+                            ? Colors.white
+                            : isDarkMode
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     selected: isSelected,
                     onSelected: (bool selected) {
                       productDetailsProvider.setSelectedSize(size);
                     },
-                    selectedColor: Colors.brown,
-                    backgroundColor: Colors.transparent,
+                    selectedColor: isDarkMode ? Colors.blueGrey : Colors.brown,
+                    backgroundColor:
+                        isDarkMode ? Colors.grey[800] : Colors.grey[200],
                   ),
                 );
               }).toList(),
@@ -360,9 +367,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   Widget _buildPriceAndAddToCartButton(CartProvider cartProvider,
       ProductDetailsProvider productDetailsProvider) {
-    return Card(
-      elevation: 2,
-      shadowColor: Color.fromARGB(197, 235, 235, 238),
+    return Container(
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 70, 70, 70),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Container(
@@ -444,11 +456,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   },
                   child: Row(
                     children: [
-                      SvgPicture.asset(
-                        "assets/svg/shopping-bag.svg",
+                      SvgPicture.asset("assets/svg/shopping-bag.svg",
                           colorFilter: ColorFilter.mode(
-                              Color.fromARGB(255, 255, 255, 255), BlendMode.srcIn)
-                      ),
+                              Color.fromARGB(255, 255, 255, 255),
+                              BlendMode.srcIn)),
                       SizedBox(width: 10.h),
                       Text(
                         'Add to Cart',
