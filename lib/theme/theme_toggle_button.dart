@@ -9,9 +9,14 @@ class ThemeToggleButton extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
 
     return IconButton(
-      icon: Icon(brightness == Brightness.dark
-          ? Icons.light_rounded
-          : Icons.dark_mode_rounded),
+      icon: CircleAvatar(
+        child: Icon(
+          brightness == Brightness.dark
+              ? Icons.light_rounded
+              : Icons.dark_mode_rounded,
+          color: Colors.white,
+        ),
+      ),
       onPressed: () {
         themeProvider.toggleTheme();
       },
