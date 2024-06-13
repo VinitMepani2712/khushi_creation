@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:khushi_creation/screens/main_screen/chat_screen.dart';
 import 'package:khushi_creation/screens/main_screen/profile_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../main_screen/cart_screen.dart';
-import '../main_screen/chat_screen.dart';
-import '../main_screen/home_screen.dart';
-import '../main_screen/whishlist_screen.dart';
+import 'package:khushi_creation/screens/main_screen/home_screen.dart';
+import 'package:khushi_creation/screens/main_screen/cart_screen.dart';
+import 'package:khushi_creation/screens/main_screen/whishlist_screen.dart';
+
+
+
 
 class BottomNavBar extends StatefulWidget {
   final String? currentLocation;

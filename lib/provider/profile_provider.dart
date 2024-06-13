@@ -20,13 +20,13 @@ class ProfileProvider with ChangeNotifier {
     // name = user?.displayName;
   }
 
-  String? get name => _name;
+  String get name => user?.displayName ?? '';
   File? get image => _image;
   String get email => user?.email ?? '';
-  String get photoURL => user?.photoURL ?? 'https://via.placeholder.com/150';
+  String get photoURL => user?.photoURL ?? '';
   String get userId => user?.uid ?? '';
-  String? get phoneNumber => _mobileNumber;
-  String? get gender => _gender;
+  String get phoneNumber => user?.phoneNumber ?? '';
+  // String get gender =>  user?.;
   String? get dateOfBirth => _dateOfBirth;
 
   Future<void> pickImage() async {
@@ -37,25 +37,25 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-   void updateName(String name) {
-    _name = name;
-    notifyListeners();
-  }
+  // void updateName(String name) {
+  //   _name = name;
+  //   notifyListeners();
+  // }
 
-  void updatePhoneNumber(String phoneNumber) {
-    _mobileNumber = phoneNumber;
-    notifyListeners();
-  }
+  // void updatePhoneNumber(String phoneNumber) {
+  //   _mobileNumber = phoneNumber;
+  //   notifyListeners();
+  // }
 
-  void updateGender(String gender) {
-    _gender = gender;
-    notifyListeners();
-  }
+  // void updateGender(String gender) {
+  //   _gender = gender;
+  //   notifyListeners();
+  // }
 
-  void updateDateOfBirth(String dateOfBirth) {
-    _dateOfBirth = dateOfBirth;
-    notifyListeners();
-  }
+  // void updateDateOfBirth(String dateOfBirth) {
+  //   _dateOfBirth = dateOfBirth;
+  //   notifyListeners();
+  // }
 
   Future<void> uploadImage() async {
     if (_image == null) return;
@@ -113,16 +113,3 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 }
-
-
-
-
-
-
-  
-
-  
-
-
-
-

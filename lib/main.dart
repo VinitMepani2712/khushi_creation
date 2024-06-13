@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khushi_creation/firebase_options.dart';
+import 'package:khushi_creation/provider/auth_provider.dart';
 import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/provider/product_details_provider.dart';
@@ -33,6 +34,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ProfileProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthenticationProvider(),
         ),
       ],
       child: const KhushiCreation(),

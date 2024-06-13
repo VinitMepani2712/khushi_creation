@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:khushi_creation/provider/auth_provider.dart';
 import 'package:khushi_creation/provider/profile_provider.dart';
-import 'package:khushi_creation/widget/widget_support.dart';
+import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 
 class ComplatedProfileScreen extends StatefulWidget {
-  const ComplatedProfileScreen({super.key});
+  const ComplatedProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<ComplatedProfileScreen> createState() => _ComplatedProfileScreenState();
@@ -17,7 +17,6 @@ class ComplatedProfileScreen extends StatefulWidget {
 class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedGender;
-  bool isChecked = false;
   String? _name;
   String? _phoneNumber;
   bool _isLoading = false;
@@ -27,8 +26,8 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final authProvider = Provider.of<AuthenticationProvider>(context);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -45,21 +44,13 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
                 SizedBox(height: 50.h),
                 _buildProfileImage(profileProvider),
                 SizedBox(height: 20.h),
-                _buildTextField(
-                  label: "Name",
-                  controller: nameController,
-                  hintText: "Name",
-                  icon: Icons.person,
-                  validator: (value) => value == null || value.isEmpty
-                      ? '\u274C Please enter your name'
-                      : null,
-                ),
+                _buildTextField(authProvider),
                 SizedBox(height: 10.h),
                 _buildPhoneField(),
                 SizedBox(height: 10.h),
                 _buildGenderDropdown(),
                 SizedBox(height: 40.h),
-                _buildCompleteProfileButton(profileProvider),
+                _buildCompleteProfileButton(authProvider),
               ],
             ),
           ),
@@ -98,11 +89,14 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
         Text(
           "Complete Your Profile",
           textAlign: TextAlign.center,
-          style: AppWidget.textStyle(),
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20.h),
         Text(
-            " 'Don't worry, only you can see your personal data. No one else will be able to see it. "),
+          "Don't worry, only you can see your personal data. No one else will be able to see it.",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14.sp),
+        ),
       ],
     );
   }
@@ -126,7 +120,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
               child: CircleAvatar(
                 backgroundColor: Color(0xff704F38),
                 child: Icon(
-                  FontAwesomeIcons.penToSquare,
+                  FontAwesomeIcons.pen,
                   color: Colors.white,
                 ),
               ),
@@ -137,56 +131,49 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-    required String? Function(String?) validator,
-  }) {
+  Widget _buildTextField(AuthenticationProvider authProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text("Name"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: controller,
-          validator: validator,
+          controller: nameController,
+          validator: (value) =>
+              value == null || value.isEmpty ? 'Please enter your name' : null,
           decoration: InputDecoration(
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color((0xffDEDEDE)),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color((0xffDEDEDE)),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color((0xffDEDEDE)),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color((0xffDEDEDE)),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             fillColor: Color.fromRGBO(64, 123, 255, 0.03),
             filled: true,
-            hintText: hintText,
+            hintText: "Name",
             hintStyle: TextStyle(color: Color(0xff858383)),
-            suffixIcon: Icon(icon),
+            suffixIcon: Icon(Icons.person),
             border: InputBorder.none,
           ),
           style: TextStyle(color: Colors.black),
+          onChanged: (value) {
+            setState(() {
+              _name = value;
+            });
+          },
         ),
-      ],
+        SizedBox(height: 20.h),
+        ],
     );
   }
 
@@ -195,9 +182,9 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Phone Number"),
-        SizedBox(height: 10.h),
+        SizedBox(height: 10.0),
         IntlPhoneField(
-          initialValue: _phoneNumber,
+          controller: phoneController,
           decoration: InputDecoration(
             labelText: 'Phone Number',
             fillColor: Color.fromRGBO(64, 123, 255, 0.03),
@@ -207,36 +194,26 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
             suffixIcon: Icon(Icons.phone),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color(0xffDEDEDE),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color(0xffDEDEDE),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color(0xffDEDEDE),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color(0xffDEDEDE),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(
-                color: Color(0xffDEDEDE),
-              ),
+              borderSide: BorderSide(color: Color(0xffDEDEDE)),
             ),
           ),
-          initialCountryCode: 'IND',
+          initialCountryCode: 'IN',
           onChanged: (phone) {
             setState(() {
               _phoneNumber = phone.completeNumber;
@@ -244,7 +221,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
           },
           validator: (phone) {
             if (phone == null || phone.number.isEmpty) {
-              return '\u274C Please enter your number';
+              return 'Please enter your number';
             }
             return null;
           },
@@ -290,15 +267,19 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
           ),
           value: _selectedGender,
           items: [
-            'Select',
-            'Male',
-            'Female',
-          ]
-              .map((gender) => DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(gender),
-                  ))
-              .toList(),
+            DropdownMenuItem(
+              value: 'Select',
+              child: Text('Select'),
+            ),
+            DropdownMenuItem(
+              value: 'Male',
+              child: Text('Male'),
+            ),
+            DropdownMenuItem(
+              value: 'Female',
+              child: Text('Female'),
+            ),
+          ],
           onChanged: (value) {
             setState(() {
               _selectedGender = value;
@@ -315,20 +296,23 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
     );
   }
 
- Widget _buildCompleteProfileButton(ProfileProvider profileProvider) {
+  Widget _buildCompleteProfileButton(AuthenticationProvider authProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: GestureDetector(
         onTap: () async {
-          setState(() {
-            _isLoading =
-                true; 
-          });
           if (_formKey.currentState!.validate()) {
+            setState(() {
+              _isLoading = true;
+            });
+
             try {
-              profileProvider.updatePhoneNumber(phoneController.text);
-              profileProvider.updateGender(_selectedGender ?? '');
-              await profileProvider.updateProfile();
+              await authProvider.updateUserProfile(
+                _name ?? '',
+                _phoneNumber ?? '',
+                _selectedGender ?? '',
+              );
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -347,8 +331,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
               );
             } finally {
               setState(() {
-                _isLoading =
-                    false; 
+                _isLoading = false;
               });
             }
           }
@@ -363,8 +346,8 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
             border: Border.all(color: const Color(0xffDEDEDE)),
           ),
           child: Center(
-            child: _isLoading // Check loading state to show appropriate content
-                ? CircularProgressIndicator() // Show loading indicator if isLoading is true
+            child: _isLoading
+                ? CircularProgressIndicator()
                 : Text(
                     "Complete Profile",
                     textAlign: TextAlign.center,
@@ -376,6 +359,3 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
     );
   }
 }
-
-
-

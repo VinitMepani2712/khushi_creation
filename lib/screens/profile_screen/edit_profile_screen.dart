@@ -73,7 +73,7 @@ class EditProfileScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ListTile(
           title: Text('Name'),
-          subtitle: Text(profileProvider.name ?? ''),
+          subtitle: Text(profileProvider.name),
           onTap: () {},
         ),
       ],
@@ -98,12 +98,12 @@ class EditProfileScreen extends StatelessWidget {
         ),
         ListTile(
           title: Text('Phone Number'),
-          subtitle: Text(profileProvider.phoneNumber ?? ''),
+          subtitle: Text(profileProvider.phoneNumber),
         ),
-        ListTile(
-          title: Text('Gender'),
-          subtitle: Text(profileProvider.gender ?? ''),
-        ),
+        // ListTile(
+        //   title: Text('Gender'),
+        //   subtitle: Text(profileProvider.gender ?? ''),
+        // ),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:khushi_creation/screens/location/location_screen.dart';
-import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:khushi_creation/provider/auth_provider.dart';
+import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -16,161 +15,56 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  String name = "";
-  String email = "";
-  String password = "";
-  bool isChecked = false;
-  bool isPasswordVisible1 = false;
-  bool showCheckboxError = false;
-
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isSignIn = false; 
 
-Future<void> registration() async {
-    setState(() {
-      _isSignIn = true;
-    });
-
-    try {
-      if (!isChecked) {
-        throw "You must agree to the Terms & Conditions";
-      }
-
-      if (password == null || email == null) {
-        throw "Email and Password cannot be empty";
-      }
-
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            "Registered Successfully",
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LocationScreen(),
-        ),
-      );
-    } on FirebaseException catch (e) {
-      if (e.code == "weak-password") {
-        throw "Provided password is not greater than 8 characters";
-      } else if (e.code == "email-already-in-use") {
-        throw "Account is already in use, Please log in";
-      } else {
-        throw "An error occurred: ${e.message}";
-      }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            error.toString(),
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
-      );
-    } finally {
-      setState(() {
-        _isSignIn =
-            false; 
-      });
-    }
-  }
-
-Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            "Registered Successfully",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LocationScreen(),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "Registration Failed: ${e.toString()}",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    }
-  }
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context);
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(top: 40.h),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                children: [
-                  _buildTitle(),
-                  SizedBox(height: 20.h),
-                  _buildSubtitle(),
-                  SizedBox(height: 50.h),
-                  _buildNameField(),
-                  SizedBox(height: 20.h),
-                  _buildEmailField(),
-                  SizedBox(height: 20.h),
-                  _buildPasswordField(),
-                  _buildCheckbox(),
-                  _buildSignUpButton(),
-                  Divider(
-                    height: 40.h,
-                    color: Color(0xffD1D3D4),
-                    indent: 20.w,
-                    endIndent: 20.w,
+      body: ChangeNotifierProvider(
+        create: (context) => AuthenticationProvider(),
+        child: Consumer<AuthenticationProvider>(
+          builder: (context, authProvider, child) {
+            return GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 40.h),
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Column(
+                        children: [
+                          _buildTitle(),
+                          SizedBox(height: 20.h),
+                          _buildSubtitle(),
+                          SizedBox(height: 50.h),
+                          _buildNameField(authProvider),
+                          SizedBox(height: 20.h),
+                          _buildEmailField(authProvider),
+                          SizedBox(height: 20.h),
+                          _buildPasswordField(authProvider),
+                          _buildCheckbox(authProvider),
+                          _buildSignUpButton(authProvider, context),
+                          Divider(
+                            height: 40.h,
+                            color: Color(0xffD1D3D4),
+                            indent: 20.w,
+                            endIndent: 20.w,
+                          ),
+                          _buildSocialIcons(authProvider, context),
+                          SizedBox(height: 15.h),
+                          _buildSignInText(context),
+                        ],
+                      ),
+                    ),
                   ),
-                  _buildSocialIcons(context),
-                  SizedBox(height: 15.h),
-                  _buildSignInText(context),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -192,14 +86,14 @@ Future<void> signInWithGoogle(BuildContext context) async {
     );
   }
 
-  Widget _buildNameField() {
+  Widget _buildNameField(AuthenticationProvider authprovider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Name"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: nameController,
+          controller: authprovider.nameController,
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please enter your name'
               : null,
@@ -213,14 +107,15 @@ Future<void> signInWithGoogle(BuildContext context) async {
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(AuthenticationProvider authprovider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Email"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: emailController,
+          controller: authprovider.emailController,
+          onChanged: (value) => authprovider.setEmail(value),
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please enter your email address'
               : !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)
@@ -236,15 +131,16 @@ Future<void> signInWithGoogle(BuildContext context) async {
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(AuthenticationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Password"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: passwordController,
-          obscureText: !isPasswordVisible1,
+          controller: provider.passwordController,
+          obscureText: !provider.isPasswordVisible,
+          onChanged: (value) => provider.setPassword(value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "\u274C Enter your password";
@@ -261,12 +157,10 @@ Future<void> signInWithGoogle(BuildContext context) async {
           },
           decoration: _inputDecoration(
             hintText: "Password",
-            icon: isPasswordVisible1
+            icon: provider.isPasswordVisible
                 ? FontAwesomeIcons.eye
                 : FontAwesomeIcons.eyeSlash,
-            onIconTap: () => setState(() {
-              isPasswordVisible1 = !isPasswordVisible1;
-            }),
+            onIconTap: provider.togglePasswordVisibility,
           ),
           style: TextStyle(color: Colors.black),
         ),
@@ -274,7 +168,7 @@ Future<void> signInWithGoogle(BuildContext context) async {
     );
   }
 
-  Widget _buildCheckbox() {
+  Widget _buildCheckbox(AuthenticationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -294,12 +188,9 @@ Future<void> signInWithGoogle(BuildContext context) async {
               ],
             ),
           ),
-          value: isChecked,
+          value: provider.isChecked,
           onChanged: (newValue) {
-            setState(() {
-              isChecked = newValue ?? false;
-              showCheckboxError = false;
-            });
+            provider.setChecked(newValue ?? false);
           },
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: Color(0xff704F38),
@@ -307,7 +198,7 @@ Future<void> signInWithGoogle(BuildContext context) async {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        if (showCheckboxError)
+        if (provider.showCheckboxError)
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Text(
@@ -319,17 +210,14 @@ Future<void> signInWithGoogle(BuildContext context) async {
     );
   }
 
-  Widget _buildSignUpButton() {
+  Widget _buildSignUpButton(
+      AuthenticationProvider authProvider, BuildContext context) {
     return GestureDetector(
       onTap: () async {
         if (_formKey.currentState!.validate()) {
-          setState(() {
-            name = nameController.text;
-
-            email = emailController.text;
-            password = passwordController.text;
-          });
-          registration();
+          authProvider.setEmail(authProvider.emailController.text);
+          authProvider.setPassword(authProvider.passwordController.text);
+          authProvider.registration(context, authProvider.isChecked);
         }
       },
       child: Container(
@@ -343,38 +231,32 @@ Future<void> signInWithGoogle(BuildContext context) async {
           border: Border.all(color: const Color(0xffDEDEDE)),
         ),
         child: Center(
-          child: _isSignIn
+          child: authProvider.isSignIn
               ? CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 )
               : Text(
-            "Sign Up",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xffFFFFFF)),
-          ),
+                  "Sign Up",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xffFFFFFF)),
+                ),
         ),
       ),
     );
   }
 
-Widget _buildSocialIcons(BuildContext context) {
+  Widget _buildSocialIcons(
+      AuthenticationProvider provider, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildSocialIcon(
-          'assets/svg/apple.svg',
-          20.0.w,
-          30.0.h,
-          () {
-            // Implement Apple Sign-In functionality here
-          },
-        ),
+        _buildSocialIcon('assets/svg/apple.svg', 20.0.w, 30.0.h, () {}),
         _buildSocialIcon(
           'assets/svg/google.svg',
           20.0.w,
           30.0.h,
           () {
-            signInWithGoogle(context); // Pass context to signInWithGoogle
+            provider.signInWithGoogle(context);
           },
         ),
         _buildSocialIcon(
@@ -382,7 +264,7 @@ Widget _buildSocialIcons(BuildContext context) {
           20.0.w,
           30.0.h,
           () {
-            // Implement Facebook Sign-In functionality here
+           
           },
         ),
       ],

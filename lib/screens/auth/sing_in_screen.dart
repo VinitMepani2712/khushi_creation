@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:khushi_creation/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:khushi_creation/screens/auth/forgot_password_screen.dart';
 import 'package:khushi_creation/screens/auth/sign_up_screen.dart';
-import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:khushi_creation/widget/widget_support.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -16,94 +16,59 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  String email = "";
-  String password = "";
-  bool isPasswordVisible1 = false;
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool _isLoggingIn = false;
-
-  Future<void> userSignIn() async {
-    setState(() {
-      _isLoggingIn = true;
-    });
-
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BottomNavBar(),
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = '';
-
-      if (e.code == 'user-not-found') {
-        errorMessage = "User id is not registered";
-      } else if (e.code == 'wrong-password') {
-        errorMessage = "Your password is wrong! Please try again";
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            errorMessage,
-            style: AppWidget.snackbarTextStyle(),
-          ),
-        ),
-      );
-    } finally {
-      setState(() {
-        _isLoggingIn = false;
-      });
-    }
-  }
+    final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
 
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(top: 40.h),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              child: Column(
-                children: [
-                  _buildTitle(),
-                  SizedBox(height: 20.h),
-                  _buildSubtitle(),
-                  SizedBox(height: 40.h),
-                  _buildEmailField(),
-                  SizedBox(height: 20.h),
-                  _buildPasswordField(),
-                  SizedBox(height: 10.h),
-                  _buildForgotPassword(),
-                  SizedBox(height: 10.h),
-                  _buildSignInButton(),
-                  Divider(
-                    height: 40.h,
-                    color: Color(0xffD1D3D4),
-                    indent: 20.w,
-                    endIndent: 20.w,
+      body: ChangeNotifierProvider(
+        create: (context) => AuthenticationProvider(),
+        child: Consumer<AuthenticationProvider>(
+          builder: (context, provider, child) {
+            return GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 40.h),
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      child: Column(
+                        children: [
+                          _buildTitle(),
+                          SizedBox(height: 20.h),
+                          _buildSubtitle(),
+                          SizedBox(height: 40.h),
+                          _buildEmailField(provider),
+                          SizedBox(height: 20.h),
+                          _buildPasswordField(provider),
+                          SizedBox(height: 10.h),
+                          _buildForgotPassword(context),
+                          SizedBox(height: 10.h),
+                          _buildSignInButton(provider, context),
+                          Divider(
+                            height: 40.h,
+                            color: Color(0xffD1D3D4),
+                            indent: 20.w,
+                            endIndent: 20.w,
+                          ),
+                          _buildSocialIcons(),
+                          SizedBox(height: 15.h),
+                          _buildSignUpText(context),
+                        ],
+                      ),
+                    ),
                   ),
-                  _buildSocialIcons(),
-                  SizedBox(height: 15.h),
-                  _buildSignUpText(),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -125,14 +90,14 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(AuthenticationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Email'),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: emailController,
+          onChanged: (value) => provider.setEmail(value),
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please enter your email address'
               : !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)
@@ -148,26 +113,24 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(AuthenticationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Password'),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: passwordController,
-          obscureText: !isPasswordVisible1,
+          obscureText: !provider.isPasswordVisible,
+          onChanged: (value) => provider.setPassword(value),
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please Enter Password'
               : null,
           decoration: _inputDecoration(
             hintText: 'Password',
-            icon: isPasswordVisible1
+            icon: provider.isPasswordVisible
                 ? FontAwesomeIcons.eye
                 : FontAwesomeIcons.eyeSlash,
-            onIconTap: () => setState(() {
-              isPasswordVisible1 = !isPasswordVisible1;
-            }),
+            onIconTap: provider.togglePasswordVisibility,
           ),
           style: TextStyle(color: Colors.black),
         ),
@@ -175,7 +138,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildForgotPassword() {
+  Widget _buildForgotPassword(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 180.w),
       child: TextButton(
@@ -197,42 +160,39 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildSignInButton() {
-    return GestureDetector(
-      onTap: () async {
-        if (_formKey.currentState!.validate()) {
-          setState(() {
-            email = emailController.text;
-            password = passwordController.text;
-          });
-
-          await userSignIn();
-        }
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 54.h,
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Color(0xff704F38),
-          border: Border.all(color: const Color(0xffDEDEDE)),
-        ),
-        child: Center(
-          child: _isLoggingIn
-              ? CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                )
-              : Text(
-                  'Sign In',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xffFFFFFF)),
-                ),
+Widget _buildSignInButton(
+      AuthenticationProvider authProvider, BuildContext context) {
+    return Builder(
+      builder: (context) => GestureDetector(
+        onTap: () async {
+          if (Form.of(context).validate()) {
+            await authProvider.userSignIn(context);
+          }
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 54.h,
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Color(0xff704F38),
+            border: Border.all(color: const Color(0xffDEDEDE)),
+          ),
+          child: Center(
+            child: authProvider.isLoggingIn
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                : Text(
+                    'Sign In',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Color(0xffFFFFFF)),
+                  ),
+          ),
         ),
       ),
     );
   }
-
   Widget _buildSocialIcons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -275,7 +235,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildSignUpText() {
+  Widget _buildSignUpText(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushReplacement(
