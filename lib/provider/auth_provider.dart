@@ -13,7 +13,7 @@ class AuthenticationProvider extends ChangeNotifier {
   bool _isPasswordVisible = false;
   bool _isLoggingIn = false;
   bool _isSignIn = false;
-   bool isChecked = false;
+  bool isChecked = false;
 
   String get name => _name;
   String get email => _email;
@@ -23,7 +23,7 @@ class AuthenticationProvider extends ChangeNotifier {
   bool get isSignIn => _isSignIn;
   bool showCheckboxError = false;
 
- final TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -43,7 +43,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-   void setChecked(bool value) {
+  void setChecked(bool value) {
     isChecked = value;
     notifyListeners();
   }

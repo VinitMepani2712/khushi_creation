@@ -109,7 +109,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
             radius: 75,
             backgroundImage: profileProvider.image == null
                 ? AssetImage(profileProvider
-                    .photoURL) // Ensure `photoURL` is set correctly
+                    .photoURL) 
                 : FileImage(profileProvider.image!),
           ),
           Positioned(
@@ -378,4 +378,6 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
       ),
     );
   }
+
+
 }
