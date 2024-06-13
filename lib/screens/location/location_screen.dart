@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:khushi_creation/screens/auth/profile_screen.dart';
+import 'package:khushi_creation/screens/auth/completed_profile_screen.dart';
 import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:khushi_creation/screens/location/manual_location_screen.dart';
@@ -152,12 +152,12 @@ class _LocationScreenState extends State<LocationScreen> {
               '${place.street}, ${place.name}, ${place.locality}-${place.postalCode}, ${place.administrativeArea}, ${place.country}.';
         });
 
-        // await _saveLocationToFirestore(currentLocation!);
+        await saveLocationToFirestore(currentLocation!);
 
         await Future.delayed(
           Duration(milliseconds: 300),
         );
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ComplatedProfileScreen(),
@@ -169,24 +169,24 @@ class _LocationScreenState extends State<LocationScreen> {
         });
       } finally {
         setState(() {
-          _isLoading =
-              false;
+          _isLoading = false;
         });
       }
     } else {
       setState(() {
         currentLocation = 'Location permission denied';
-        _isLoading = false; 
+        _isLoading = false;
       });
     }
   }
-  // Future<void> _saveLocationToFirestore(String location) async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //   if (user != null) {
-  //     await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(user.uid)
-  //         .set({'location': location}, SetOptions(merge: true));
-  //   }
-  // }
+
+  Future<void> saveLocationToFirestore(String location) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({'location': location}, SetOptions(merge: true));
+    }
+  }
 }

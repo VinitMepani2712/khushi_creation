@@ -54,7 +54,7 @@ class AuthenticationProvider extends ChangeNotifier {
   }
 
   Future<void> updateUserProfile(
-      String name, String phoneNumber, String gender) async {
+      String name, String phoneNumber, String gender, String imageUrl) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final CollectionReference users =

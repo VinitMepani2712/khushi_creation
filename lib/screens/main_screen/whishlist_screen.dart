@@ -19,6 +19,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Favourites'),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
       ),
       body: Consumer<HomeProviderScreen>(
         builder: (context, homeScreenProvider, child) {

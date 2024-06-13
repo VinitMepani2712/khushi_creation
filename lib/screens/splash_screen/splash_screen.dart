@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     } else {
       User? user = FirebaseAuth.instance.currentUser;
-      if (user != null && !user.isAnonymous && user.emailVerified) {
+      if (user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => BottomNavBar()),

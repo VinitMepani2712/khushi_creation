@@ -1,69 +1,42 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class ProfileProvider with ChangeNotifier {
   User? user;
-  File? _image;
-  String? _name;
-  String? _mobileNumber;
-  String? _gender;
-  String? _dateOfBirth;
+  String? userId;
+  File? image;
+  String? name;
+  String? email;
+  String? phoneNumber;
+  String? gender;
+  String? dateOfBirth;
   final picker = ImagePicker();
-  final _auth = FirebaseAuth.instance;
-  final _storage = FirebaseStorage.instance;
-
-  ProfileProvider() {
-    user = _auth.currentUser;
-    // name = user?.displayName;
-  }
-
-  String get name => user?.displayName ?? '';
-  File? get image => _image;
-  String get email => user?.email ?? '';
+  final auth = FirebaseAuth.instance;
+  final storage = FirebaseStorage.instance;
+  final firestore = FirebaseFirestore.instance;
   String get photoURL => user?.photoURL ?? '';
-  String get userId => user?.uid ?? '';
-  String get phoneNumber => user?.phoneNumber ?? '';
-  // String get gender =>  user?.;
-  String? get dateOfBirth => _dateOfBirth;
 
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      _image = File(pickedFile.path);
+      image = File(pickedFile.path);
       notifyListeners();
     }
   }
 
-  // void updateName(String name) {
-  //   _name = name;
-  //   notifyListeners();
-  // }
-
-  // void updatePhoneNumber(String phoneNumber) {
-  //   _mobileNumber = phoneNumber;
-  //   notifyListeners();
-  // }
-
-  // void updateGender(String gender) {
-  //   _gender = gender;
-  //   notifyListeners();
-  // }
-
-  // void updateDateOfBirth(String dateOfBirth) {
-  //   _dateOfBirth = dateOfBirth;
-  //   notifyListeners();
-  // }
-
   Future<void> uploadImage() async {
-    if (_image == null) return;
+    if (image == null || userId == null) return;
     try {
-      final ref = _storage.ref().child('user_images').child(user!.uid + '.jpg');
-      await ref.putFile(_image!);
+      final ref = storage.ref().child('user_images').child(userId! + '.jpg');
+      await ref.putFile(image!);
       final url = await ref.getDownloadURL();
       await user!.updatePhotoURL(url);
+      await firestore.collection('users').doc(userId).update({'photoURL': url});
       notifyListeners();
     } catch (e) {
       print(e);
@@ -74,6 +47,7 @@ class ProfileProvider with ChangeNotifier {
     try {
       await user!.verifyBeforeUpdateEmail(email);
       await user!.sendEmailVerification();
+      await firestore.collection('users').doc(userId).update({'email': email});
       notifyListeners();
     } catch (e) {
       print(e);
@@ -91,7 +65,7 @@ class ProfileProvider with ChangeNotifier {
 
   Future<void> updateProfile({String? email, String? password}) async {
     try {
-      if (_image != null) await uploadImage();
+      if (image != null) await uploadImage();
       if (email != null && email != user!.email) await updateEmail(email);
       if (password != null && password.isNotEmpty)
         await updatePassword(password);
@@ -100,16 +74,96 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  void updateMobileNumber(String mobileNumber) {
-    // Update the mobile number here
-  }
-
   Future<void> deleteAccount() async {
     try {
       await user!.delete();
+      await firestore.collection('users').doc(userId).delete();
       notifyListeners();
     } catch (e) {
       print(e);
     }
   }
+
+  void getUserName() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      email = user.email;
+      userId = user.uid;
+      final DocumentSnapshot<Map<String, dynamic>> users =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
+      Map<String, dynamic>? data = users.data();
+      name = data?['name'];
+    }
+  }
+
+  void getUserEmail() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      email = user.email;
+      userId = user.uid;
+      final DocumentSnapshot<Map<String, dynamic>> users =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
+      Map<String, dynamic>? data = users.data();
+      email = data?['email'];
+    }
+  }
+
+  void getUserMobileNumber() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      email = user.email;
+      userId = user.uid;
+      final DocumentSnapshot<Map<String, dynamic>> users =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
+      Map<String, dynamic>? data = users.data();
+      phoneNumber = data?['phoneNumber'];
+    }
+  }
+
+  void getUserGender() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      email = user.email;
+      userId = user.uid;
+      final DocumentSnapshot<Map<String, dynamic>> users =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
+      Map<String, dynamic>? data = users.data();
+      gender = data?['gender'];
+    }
+  }
+
+  Future<String> uploadProfileImage(File imageFile) async {
+    try {
+      // Example: Upload image to Firebase Storage
+      String fileName = path.basename(imageFile.path);
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child('profile_images/$fileName');
+
+      UploadTask uploadTask = firebaseStorageRef.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+
+      
+      String imageUrl = await taskSnapshot.ref.getDownloadURL();
+
+      
+
+      return imageUrl; 
+    } catch (e) {
+      print('Error uploading image: $e');
+      throw e; 
+    }
+  }
+
 }

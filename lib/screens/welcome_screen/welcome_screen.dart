@@ -1,7 +1,7 @@
-import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
-import 'package:khushi_creation/screens/on_board_screen/on_board_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
+import 'package:khushi_creation/screens/on_board_screen/on_board_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
@@ -10,105 +10,117 @@ class WelcomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            buildHeaderImages(),
-            buildBottom(context),
+            _buildHeaderImages(),
+            _buildBottomSection(context),
           ],
         ),
       ),
     );
   }
 
-  Widget buildHeaderImages() {
+  Widget _buildHeaderImages() {
     return Padding(
-      padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 40.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
       child: Column(
         children: [
           SizedBox(height: 30.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
+              _buildImageContainer(
                 width: 160.w,
                 height: 400.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100.h),
-                  image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/welcome_screen/left_side.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                borderRadius: 100.h,
+                imagePath: 'assets/images/welcome_screen/left_side.jpg',
               ),
               SizedBox(width: 8.w),
               Column(
                 children: [
-                  Container(
+                  _buildImageContainer(
                     width: 140.w,
                     height: 220.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100.h),
-                      image: DecorationImage(
-                        image: AssetImage(
-                            'assets/images/welcome_screen/right_top.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    borderRadius: 100.h,
+                    imagePath: 'assets/images/welcome_screen/right_top.jpg',
                   ),
                   SizedBox(height: 16.h),
                   CircleAvatar(
                     radius: 80.r,
                     backgroundImage: AssetImage(
-                        'assets/images/welcome_screen/right_bottom.jpeg'),
+                      'assets/images/welcome_screen/right_bottom.jpeg',
+                    ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
           SizedBox(height: 40.h),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: 'The ',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Fashion App ',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.brown,
-                  ),
-                ),
-                TextSpan(
-                  text: 'That Makes You Look Your Best',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            textAlign: TextAlign.center,
-          ),
+          _buildRichText(),
           SizedBox(height: 16.h),
         ],
       ),
     );
   }
 
-  Widget buildBottom(BuildContext context) {
+  Widget _buildImageContainer({
+    required double width,
+    required double height,
+    required double borderRadius,
+    required String imagePath,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        image: DecorationImage(
+          image: AssetImage(imagePath),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRichText() {
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'The ',
+            style: TextStyle(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: 'Fashion App ',
+            style: TextStyle(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.brown,
+            ),
+          ),
+          TextSpan(
+            text: 'That Makes You Look Your Best',
+            style: TextStyle(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildBottomSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 20.w, right: 20.w),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Text(
               'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
               textAlign: TextAlign.center,
@@ -119,51 +131,61 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.h),
-          ElevatedButton(
-            onPressed: () => Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => OnBoardScreen())),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.brown,
-              padding: EdgeInsets.symmetric(horizontal: 100.w, vertical: 16.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.r),
-              ),
-            ),
-            child: Text(
-              "Let's Get Started",
-              style: TextStyle(fontSize: 18.sp, color: Color(0xffFFFFFF)),
+          _buildElevatedButton(context),
+          SizedBox(height: 16.h),
+          _buildSignInTextButton(context),
+          SizedBox(height: 16.h),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildElevatedButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OnBoardScreen()),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.brown,
+        padding: EdgeInsets.symmetric(horizontal: 100.w, vertical: 16.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.r),
+        ),
+      ),
+      child: Text(
+        "Let's Get Started",
+        style: TextStyle(fontSize: 18.sp, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildSignInTextButton(BuildContext context) {
+    return TextButton(
+      onPressed: () =>
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+        ),
+     
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Already have an account?',
+            style: TextStyle(fontSize: 16.sp, color: Colors.black),
+          ),
+          Text(
+            ' Sign In',
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.brown,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.brown,
             ),
           ),
-          SizedBox(height: 16.h),
-          TextButton(
-            onPressed: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SignInScreen(),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Already have an account?',
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      color: const Color.fromARGB(255, 0, 0, 0)),
-                ),
-                Text(
-                  ' Sign In',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.brown,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.brown,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
         ],
       ),
     );

@@ -10,9 +10,9 @@ class HomeProviderScreen with ChangeNotifier {
   final SliderModel sliderModel = SliderModel();
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
-  String? _currentLocation;
+  String? currentLocation;
 
-  String? get currentLocation => _currentLocation;
+  // String? get currentLocation => _currentLocation;
 
   int currentIndex = 0;
   int selectedCategoryIndex = 0;
@@ -174,19 +174,21 @@ class HomeProviderScreen with ChangeNotifier {
   }
 
   void setCurrentLocation(String? location) {
-    _currentLocation = location;
+    currentLocation = location;
     notifyListeners();
   }
 
-  Future<void> fetchLocation() async {
+  Future<void> fetchLocationFromFirestore() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
-      _currentLocation = doc['location'];
-      notifyListeners();
+      if (userDoc.exists) {
+        currentLocation = userDoc['location'];
+        notifyListeners();
+      }
     }
   }
 }

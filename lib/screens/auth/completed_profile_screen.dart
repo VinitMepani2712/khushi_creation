@@ -34,7 +34,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: EdgeInsets.only(top: 70.h, left: 20.w, right: 20.w),
+            padding: EdgeInsets.symmetric(vertical: 70.h, horizontal: 20.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,7 +50,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
                 SizedBox(height: 10.h),
                 _buildGenderDropdown(),
                 SizedBox(height: 40.h),
-                _buildCompleteProfileButton(authProvider),
+                _buildCompleteProfileButton(authProvider, profileProvider),
               ],
             ),
           ),
@@ -106,10 +106,10 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
       child: Stack(
         children: [
           CircleAvatar(
-            minRadius: 75,
-            maxRadius: 75,
+            radius: 75,
             backgroundImage: profileProvider.image == null
-                ? AssetImage(profileProvider.photoURL) as ImageProvider
+                ? AssetImage(profileProvider
+                    .photoURL) // Ensure `photoURL` is set correctly
                 : FileImage(profileProvider.image!),
           ),
           Positioned(
@@ -173,7 +173,7 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
           },
         ),
         SizedBox(height: 20.h),
-        ],
+      ],
     );
   }
 
@@ -296,24 +296,42 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
     );
   }
 
-  Widget _buildCompleteProfileButton(AuthenticationProvider authProvider) {
+  Widget _buildCompleteProfileButton(
+      AuthenticationProvider authProvider, ProfileProvider profileProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: GestureDetector(
         onTap: () async {
+          if (profileProvider.image == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  "Please upload your profile image",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+            return;
+          }
+
           if (_formKey.currentState!.validate()) {
             setState(() {
               _isLoading = true;
             });
 
             try {
+              String imageUrl = await profileProvider
+                  .uploadProfileImage(profileProvider.image!);
+
               await authProvider.updateUserProfile(
                 _name ?? '',
                 _phoneNumber ?? '',
                 _selectedGender ?? '',
+                imageUrl,
               );
 
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => BottomNavBar(),
@@ -347,7 +365,9 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
           ),
           child: Center(
             child: _isLoading
-                ? CircularProgressIndicator()
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                  )
                 : Text(
                     "Complete Profile",
                     textAlign: TextAlign.center,

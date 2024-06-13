@@ -24,15 +24,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? currentLocation;
+  late HomeProviderScreen _homeProviderScreen;
 
   @override
   void initState() {
     super.initState();
-    final homeProviderScreen =
+     _homeProviderScreen =
         Provider.of<HomeProviderScreen>(context, listen: false);
-    homeProviderScreen.installDataLoad();
-    homeProviderScreen.startTimer();
-    homeProviderScreen.fetchLocation();
+    _homeProviderScreen.installDataLoad();
+    _homeProviderScreen.startTimer();
+    _homeProviderScreen.fetchLocationFromFirestore();
   }
 
   @override
@@ -102,37 +103,42 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildLocationTile() {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text("Your Location"),
-      subtitle: Row(
-        children: [
-          Icon(
-            Icons.location_pin,
-            color: Color(0xff704F38),
-          ),
-          SizedBox(width: 8.0),
-          if (currentLocation != null)
-            Flexible(
-              child: Text(
-                currentLocation!,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                style: TextStyle(fontSize: 14),
+    return Consumer<HomeProviderScreen>(
+      builder: (context, homeProvider, child) {
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text("Your Location"),
+          subtitle: Row(
+            children: [
+              Icon(
+                Icons.location_pin,
+                color: Color(0xff704F38),
               ),
-            )
-          else
-            Text("Fetching location..."),
-          Spacer(),
-          CircleAvatar(
-            backgroundColor: Color(0xffF1F1F1),
-            child: SvgPicture.asset(
-              "assets/svg/notification-bing.svg",
-              colorFilter: ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn),
-            ),
+              SizedBox(width: 8.0),
+              if (homeProvider.currentLocation != null)
+                Flexible(
+                  child: Text(
+                    homeProvider.currentLocation!,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                )
+              else
+                Text("Fetching location..."),
+              Spacer(),
+              CircleAvatar(
+                backgroundColor: Color(0xffF1F1F1),
+                child: SvgPicture.asset(
+                  "assets/svg/notification-bing.svg",
+                  colorFilter:
+                      ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

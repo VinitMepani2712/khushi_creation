@@ -17,8 +17,11 @@ class FilteredClothesScreen extends StatelessWidget {
     }).toList();
 
     return Scaffold(
+  
       appBar: AppBar(
         title: Text('$wishListCategories Clothes'),
+            backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         child: Column(

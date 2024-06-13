@@ -20,7 +20,6 @@ class ProfileScreen extends StatelessWidget {
           return ListView(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             children: [
-              SizedBox(height: 20),
               _buildProfileHeader(context, profileProvider),
               SizedBox(height: 10),
               Center(
@@ -42,13 +41,10 @@ class ProfileScreen extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      title: Padding(
-        padding: EdgeInsets.only(left: 20.0, top: 40.0, right: 20.0),
-        child: Text(
-          textAlign: TextAlign.center,
-          "Profile",
-          style: TextStyle(fontSize: 20),
-        ),
+      title: Text(
+        textAlign: TextAlign.center,
+        "Profile",
+        style: TextStyle(fontSize: 20),
       ),
     );
   }
@@ -73,11 +69,13 @@ class ProfileScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                MaterialPageRoute(
+                  builder: (context) => EditProfileScreen(),
+                ),
               );
             },
             child: CircleAvatar(
-              backgroundColor: Color(0xff704F38),
+              backgroundColor: Color.fromARGB(255, 92, 92, 92),
               child: Icon(
                 Icons.edit,
                 color: Colors.white,

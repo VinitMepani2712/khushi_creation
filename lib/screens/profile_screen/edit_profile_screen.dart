@@ -3,7 +3,24 @@ import 'package:khushi_creation/widget/widget_support.dart';
 import 'package:provider/provider.dart';
 import 'package:khushi_creation/provider/profile_provider.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  late ProfileProvider _profileProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    _profileProvider.getUserName();
+    _profileProvider.getUserEmail();
+    _profileProvider.getUserMobileNumber();
+    _profileProvider.getUserGender();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +42,7 @@ class EditProfileScreen extends StatelessWidget {
                         radius: 50,
                         backgroundImage: profileProvider.image == null
                             ? AssetImage(profileProvider.photoURL)
+                                as ImageProvider
                             : FileImage(profileProvider.image!),
                       ),
                     ),
@@ -73,7 +91,7 @@ class EditProfileScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ListTile(
           title: Text('Name'),
-          subtitle: Text(profileProvider.name),
+          subtitle: Text(profileProvider.name ?? ''),
           onTap: () {},
         ),
       ],
@@ -89,21 +107,21 @@ class EditProfileScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ListTile(
           title: Text('User ID'),
-          subtitle: Text(profileProvider.userId),
+          subtitle: Text(profileProvider.userId ?? ''),
           trailing: Icon(Icons.lock),
         ),
         ListTile(
           title: Text('E-mail'),
-          subtitle: Text(profileProvider.email),
+          subtitle: Text(profileProvider.email ?? ''),
         ),
         ListTile(
           title: Text('Phone Number'),
-          subtitle: Text(profileProvider.phoneNumber),
+          subtitle: Text(profileProvider.phoneNumber ?? ''),
         ),
-        // ListTile(
-        //   title: Text('Gender'),
-        //   subtitle: Text(profileProvider.gender ?? ''),
-        // ),
+        ListTile(
+          title: Text('Gender'),
+          subtitle: Text(profileProvider.gender ?? ''),
+        ),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -155,7 +173,7 @@ class EditProfileScreen extends StatelessWidget {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              profileProvider.updateEmail(profileProvider.email);
+              profileProvider.updateEmail(profileProvider.email ?? '');
               Navigator.pop(context);
             },
             child: Text(
