@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
           child: CircleAvatar(
             radius: 80,
             backgroundImage: profileProvider.image == null
-                ? NetworkImage(profileProvider.photoURL)
+                ? AssetImage(profileProvider.photoURL) as ImageProvider
                 : FileImage(profileProvider.image!),
           ),
         ),
@@ -75,10 +75,14 @@ class ProfileScreen extends StatelessWidget {
               );
             },
             child: CircleAvatar(
-              backgroundColor: Colors.brown,
-              child: Icon(
-                Icons.edit,
-                color: Colors.white,
+              radius: 25,
+              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              child: CircleAvatar(
+                backgroundColor: Colors.brown,
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

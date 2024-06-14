@@ -131,16 +131,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildPasswordField(AuthenticationProvider provider) {
+  Widget _buildPasswordField(AuthenticationProvider authProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Password"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: provider.passwordController,
-          obscureText: !provider.isPasswordVisible,
-          onChanged: (value) => provider.setPassword(value),
+          controller: authProvider.passwordController,
+          obscureText: !authProvider.isPasswordVisible,
+          onChanged: (value) => authProvider.setPassword(value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "\u274C Enter your password";
@@ -157,10 +157,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
           decoration: _inputDecoration(
             hintText: "Password",
-            icon: provider.isPasswordVisible
+            icon: authProvider.isPasswordVisible
                 ? FontAwesomeIcons.eye
                 : FontAwesomeIcons.eyeSlash,
-            onIconTap: provider.togglePasswordVisibility,
+            onIconTap: authProvider.togglePasswordVisibility,
           ),
           style: TextStyle(color: Colors.black),
         ),
@@ -168,7 +168,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildCheckbox(AuthenticationProvider provider) {
+  Widget _buildCheckbox(AuthenticationProvider authProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -188,9 +188,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
           ),
-          value: provider.isChecked,
+          value: authProvider.isChecked,
           onChanged: (newValue) {
-            provider.setChecked(newValue ?? false);
+            authProvider.setChecked(newValue ?? false);
           },
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: Color(0xff704F38),
@@ -199,7 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        if (provider.showCheckboxError)
+        if (authProvider.showCheckboxError)
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Text(
@@ -247,7 +247,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildSocialIcons(
-      AuthenticationProvider provider, BuildContext context) {
+      AuthenticationProvider authProvider, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -257,7 +257,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           20.0.w,
           30.0.h,
           () {
-            provider.signInWithGoogle(context);
+            authProvider.signInWithGoogle(context);
           },
         ),
         _buildSocialIcon(

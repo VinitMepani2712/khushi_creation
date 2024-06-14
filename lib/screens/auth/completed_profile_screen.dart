@@ -92,10 +92,13 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
               bottom: 0,
               right: 0,
               child: CircleAvatar(
-                backgroundColor: Color(0xff704F38),
-                child: Icon(
-                  FontAwesomeIcons.pen,
-                  color: Colors.white,
+                radius: 25,
+                child: CircleAvatar(
+                  backgroundColor: Color(0xff704F38),
+                  child: Icon(
+                    FontAwesomeIcons.pen,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             )

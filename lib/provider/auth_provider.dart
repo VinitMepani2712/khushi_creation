@@ -23,6 +23,7 @@ class AuthenticationProvider extends ChangeNotifier {
   bool get isSignIn => _isSignIn;
   bool showCheckboxError = false;
 
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -212,43 +213,51 @@ class AuthenticationProvider extends ChangeNotifier {
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        print('User cancelled Google sign-in');
         return;
       }
+      _firestore
+          .collection('users')
+          .doc(googleSignInAccount.serverAuthCode)
+          .set({
+        'uid': googleSignInAccount.id,
+        'email': googleSignInAccount.email,
+        'name': googleSignInAccount.displayName,
+      }, SetOptions(merge: true));
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.brown,
-          content: Text(
-            "Registered Successfully",
-            style: TextStyle(color: Colors.white),
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottomNavBar(),
           ),
-        ),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LocationScreen(),
-        ),
-      );
-    } catch (e) {
+        );
+      } else {
+        print('User is null after sign-in');
+      }
+    } catch (e, stackTrace) {
+      print('Error signing in with Google: $e');
+      print(stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "Registration Failed: ${e.toString()}",
+            'Failed to sign in with Google. Please try again later.',
             style: TextStyle(color: Colors.white),
           ),
         ),
