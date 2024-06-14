@@ -39,7 +39,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: GestureDetector(
                       onTap: () => profileProvider.pickImage(),
                       child: CircleAvatar(
-                        radius: 50,
+                        radius: 75,
                         backgroundImage: profileProvider.image == null
                             ? AssetImage(profileProvider.photoURL)
                                 as ImageProvider
@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ListTile(
           title: Text('Name'),
           subtitle: Text(profileProvider.name ?? ''),
-          onTap: () {},
+          trailing: Icon(Icons.lock),
         ),
       ],
     );
@@ -106,29 +106,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Text('Personal Information',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ListTile(
-          title: Text('User ID'),
-          subtitle: Text(profileProvider.userId ?? ''),
-          trailing: Icon(Icons.lock),
-        ),
-        ListTile(
           title: Text('E-mail'),
-          subtitle: Text(profileProvider.email ?? ''),
-        ),
-        ListTile(
-          title: Text('Phone Number'),
-          subtitle: Text(profileProvider.phoneNumber ?? ''),
-        ),
-        ListTile(
-          title: Text('Gender'),
-          subtitle: Text(profileProvider.gender ?? ''),
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: TextButton(
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(profileProvider.email ?? ''),
+              ),
+              TextButton(
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -137,12 +122,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   );
                 },
                 child: Text(
-                  'Change Email',
+                  'Update',
                   style: AppWidget.editProfileScreenStyle(),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+        ListTile(
+          title: Text('Phone Number'),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(profileProvider.phoneNumber ?? ''),
+              ),
+              TextButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => _buildChangePhoneNumberBottomSheet(
+                        context, profileProvider),
+                  );
+                },
+                child: Text(
+                  'Update',
+                  style: AppWidget.editProfileScreenStyle(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        ListTile(
+          title: Text('Gender'),
+          subtitle: Text(profileProvider.gender ?? ''),
+          trailing: Icon(Icons.lock_outlined),
         ),
       ],
     );
@@ -178,6 +192,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             },
             child: Text(
               'Update Email',
+              style: AppWidget.editProfileScreenStyle(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChangePhoneNumberBottomSheet(
+      BuildContext context, ProfileProvider profileProvider) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Change Phone Number',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20),
+          TextField(
+            decoration: InputDecoration(labelText: 'New Phone Number'),
+            onChanged: (value) {
+              profileProvider.updatePhoneNumber(value);
+            },
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              profileProvider
+                  .updatePhoneNumber(profileProvider.phoneNumber ?? '');
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Update Phone Number',
               style: AppWidget.editProfileScreenStyle(),
             ),
           ),

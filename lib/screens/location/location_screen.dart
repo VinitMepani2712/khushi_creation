@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:khushi_creation/screens/auth/completed_profile_screen.dart';
-import 'package:khushi_creation/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:khushi_creation/screens/location/manual_location_screen.dart';
 import 'package:geocoding/geocoding.dart';

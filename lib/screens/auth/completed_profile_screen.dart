@@ -34,11 +34,10 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 70.h, horizontal: 20.w),
+            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBackButton(context),
                 SizedBox(height: 40.h),
                 _buildHeader(),
                 SizedBox(height: 50.h),
@@ -53,30 +52,6 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
                 _buildCompleteProfileButton(authProvider, profileProvider),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Color.fromARGB(255, 192, 192, 192),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: CircleAvatar(
-          minRadius: 20,
-          maxRadius: 20,
-          backgroundColor: Colors.transparent,
-          child: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
           ),
         ),
       ),
@@ -103,20 +78,19 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
 
   Widget _buildProfileImage(ProfileProvider profileProvider) {
     return Center(
-      child: Stack(
-        children: [
-          CircleAvatar(
-            radius: 75,
-            backgroundImage: profileProvider.image == null
-                ? AssetImage(profileProvider
-                    .photoURL) 
-                : FileImage(profileProvider.image!),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () => profileProvider.pickImage(),
+      child: GestureDetector(
+        onTap: () => profileProvider.pickImage(),
+        child: Stack(
+          children: [
+            CircleAvatar(
+              radius: 75,
+              backgroundImage: profileProvider.image == null
+                  ? AssetImage(profileProvider.photoURL)
+                  : FileImage(profileProvider.image!),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
               child: CircleAvatar(
                 backgroundColor: Color(0xff704F38),
                 child: Icon(
@@ -124,9 +98,9 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
                   color: Colors.white,
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -315,6 +289,45 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
             return;
           }
 
+          if (_name == null || _name!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  "Please enter your name",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+            return;
+          }
+
+          if (_phoneNumber == null || _phoneNumber!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  "Please enter your phone number",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+            return;
+          }
+
+          if (_selectedGender == null || _selectedGender!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  "Please select your gender",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+            return;
+          }
+
           if (_formKey.currentState!.validate()) {
             setState(() {
               _isLoading = true;
@@ -378,6 +391,4 @@ class _ComplatedProfileScreenState extends State<ComplatedProfileScreen> {
       ),
     );
   }
-
-
 }

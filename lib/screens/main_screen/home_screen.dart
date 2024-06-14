@@ -25,15 +25,25 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? currentLocation;
   late HomeProviderScreen _homeProviderScreen;
+  bool _isMounted = false;
 
   @override
   void initState() {
     super.initState();
-     _homeProviderScreen =
-        Provider.of<HomeProviderScreen>(context, listen: false);
-    _homeProviderScreen.installDataLoad();
-    _homeProviderScreen.startTimer();
-    _homeProviderScreen.fetchLocationFromFirestore();
+    _isMounted = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _homeProviderScreen =
+          Provider.of<HomeProviderScreen>(context, listen: false);
+      _homeProviderScreen.installDataLoad();
+      _homeProviderScreen.startTimer();
+      _homeProviderScreen.fetchLocationFromFirestore();
+    });
+  }
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
   }
 
   @override
@@ -253,8 +263,10 @@ class _HomeScreenState extends State<HomeScreen> {
       child: PageView.builder(
         controller: homeScreenProvider.pageController,
         onPageChanged: (int index) {
-          homeScreenProvider.setCurrentIndex(
-              index % homeScreenProvider.sliderModel.images.length);
+          if (_isMounted) {
+            homeScreenProvider.setCurrentIndex(
+                index % homeScreenProvider.sliderModel.images.length);
+          }
         },
         itemBuilder: (context, index) {
           final int pageIndex =

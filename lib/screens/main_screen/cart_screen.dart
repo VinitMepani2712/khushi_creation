@@ -15,7 +15,6 @@ class CartScreen extends StatelessWidget {
       ),
       body: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
-          final brightness = Theme.of(context).brightness;
 
           return cartProvider.items.isEmpty
               ? Center(

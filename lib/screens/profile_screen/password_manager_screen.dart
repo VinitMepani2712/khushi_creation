@@ -1,7 +1,9 @@
-import 'package:khushi_creation/screens/auth/forgot_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:khushi_creation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:khushi_creation/screens/auth/forgot_password_screen.dart';
 
 class PasswordManagerScreen extends StatefulWidget {
   const PasswordManagerScreen({Key? key}) : super(key: key);
@@ -26,59 +28,66 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 20.h),
-              _buildAppBar(context),
-              SizedBox(height: 20.h),
-              _buildLabel('Current Password'),
-              SizedBox(height: 10.h),
-              _buildPasswordField(
-                controller: currentPasswordController,
-                hintText: "Current Password",
-                isVisible: isCurrentPasswordVisible,
-                toggleVisibility: () => setState(() {
-                  isCurrentPasswordVisible = !isCurrentPasswordVisible;
-                }),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildAppBar(context),
+                      SizedBox(height: 20.h),
+                      _buildLabel('Current Password'),
+                      SizedBox(height: 10.h),
+                      _buildPasswordField(
+                        controller: currentPasswordController,
+                        hintText: "Current Password",
+                        isVisible: isCurrentPasswordVisible,
+                        toggleVisibility: () => setState(() {
+                          isCurrentPasswordVisible = !isCurrentPasswordVisible;
+                        }),
+                      ),
+                      SizedBox(height: 10.h),
+                      _buildForgotPasswordLink(),
+                      SizedBox(height: 40.h),
+                      _buildLabel('New Password'),
+                      SizedBox(height: 10.h),
+                      _buildPasswordField(
+                        controller: newPasswordController,
+                        hintText: "New Password",
+                        isVisible: isNewPasswordVisible,
+                        toggleVisibility: () => setState(() {
+                          isNewPasswordVisible = !isNewPasswordVisible;
+                        }),
+                      ),
+                      SizedBox(height: 20.h),
+                      _buildLabel('Confirm New Password'),
+                      SizedBox(height: 10.h),
+                      _buildPasswordField(
+                        controller: confirmPasswordController,
+                        hintText: "Confirm New Password",
+                        isVisible: isConfirmPasswordVisible,
+                        toggleVisibility: () => setState(() {
+                          isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                        }),
+                        validator: (value) =>
+                            value != newPasswordController.text
+                                ? "Passwords do not match"
+                                : null,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              SizedBox(height: 10.h),
-              _buildForgotPasswordLink(),
-              SizedBox(height: 40.h),
-              _buildLabel('New Password'),
-              SizedBox(height: 10.h),
-              _buildPasswordField(
-                controller: newPasswordController,
-                hintText: "New Password",
-                isVisible: isNewPasswordVisible,
-                toggleVisibility: () => setState(() {
-                  isNewPasswordVisible = !isNewPasswordVisible;
-                }),
-              ),
-              SizedBox(height: 20.h),
-              _buildLabel('Confirm New Password'),
-              SizedBox(height: 10.h),
-              _buildPasswordField(
-                controller: confirmPasswordController,
-                hintText: "Confirm New Password",
-                isVisible: isConfirmPasswordVisible,
-                toggleVisibility: () => setState(() {
-                  isConfirmPasswordVisible = !isConfirmPasswordVisible;
-                }),
-                validator: (value) => value != newPasswordController.text
-                    ? "Passwords do not match"
-                    : null,
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 4.h),
-              _buildSaveChangesButton(),
-            ],
+            ),
           ),
-        ),
+          _buildSaveChangesButton(context),
+          SizedBox(height: 10.h),
+        ],
       ),
     );
   }
@@ -202,11 +211,26 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
     );
   }
 
-  Widget _buildSaveChangesButton() {
+  Widget _buildSaveChangesButton(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (_formKey.currentState!.validate()) {
-          // Handle password save logic here
+          final profileProvider =
+              Provider.of<ProfileProvider>(context, listen: false);
+
+          try {
+            await profileProvider.updatePassword(
+              currentPasswordController.text,
+              newPasswordController.text,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Password updated successfully')),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         }
       },
       child: Container(

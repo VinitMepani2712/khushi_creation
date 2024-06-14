@@ -56,15 +56,15 @@ class ProfileScreen extends StatelessWidget {
       children: [
         Center(
           child: CircleAvatar(
-            radius: 55,
+            radius: 80,
             backgroundImage: profileProvider.image == null
                 ? NetworkImage(profileProvider.photoURL)
                 : FileImage(profileProvider.image!),
           ),
         ),
         Positioned(
-          top: 75,
-          left: 180,
+          top: 120,
+          left: 190,
           child: GestureDetector(
             onTap: () {
               Navigator.push(
@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
               );
             },
             child: CircleAvatar(
-              backgroundColor: Color.fromARGB(255, 92, 92, 92),
+              backgroundColor: Colors.brown,
               child: Icon(
                 Icons.edit,
                 color: Colors.white,

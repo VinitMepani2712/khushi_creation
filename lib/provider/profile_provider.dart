@@ -19,7 +19,7 @@ class ProfileProvider with ChangeNotifier {
   final auth = FirebaseAuth.instance;
   final storage = FirebaseStorage.instance;
   final firestore = FirebaseFirestore.instance;
-  String get photoURL => user?.photoURL ?? '';
+  String get photoURL => user?.photoURL ?? 'assets/images/profile/upload.jpg';
 
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -54,12 +54,35 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updatePassword(String password) async {
+  Future<void> updatePhoneNumber(String email) async {
     try {
-      await user!.updatePassword(password);
+      await user!.verifyBeforeUpdateEmail(email);
+      await user!.sendEmailVerification();
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .update({'phoneNumber': phoneNumber});
       notifyListeners();
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<void> updatePassword(
+      String currentPassword, String newPassword) async {
+    user = auth.currentUser;
+    if (user == null) return;
+
+    try {
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user!.email!,
+        password: currentPassword,
+      );
+      await user!.reauthenticateWithCredential(credential);
+      await user!.updatePassword(newPassword);
+      notifyListeners();
+    } catch (e) {
+      throw Exception('Current password is incorrect');
     }
   }
 
@@ -68,7 +91,7 @@ class ProfileProvider with ChangeNotifier {
       if (image != null) await uploadImage();
       if (email != null && email != user!.email) await updateEmail(email);
       if (password != null && password.isNotEmpty)
-        await updatePassword(password);
+        await updatePassword(email!, password);
     } catch (e) {
       print(e);
     }
@@ -154,16 +177,12 @@ class ProfileProvider with ChangeNotifier {
       UploadTask uploadTask = firebaseStorageRef.putFile(imageFile);
       TaskSnapshot taskSnapshot = await uploadTask;
 
-      
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
-      
-
-      return imageUrl; 
+      return imageUrl;
     } catch (e) {
       print('Error uploading image: $e');
-      throw e; 
+      throw e;
     }
   }
-
 }
