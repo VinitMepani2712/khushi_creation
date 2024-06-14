@@ -194,6 +194,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: Color(0xff704F38),
+          checkColor: Colors.white,
           checkboxShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
@@ -263,9 +264,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'assets/svg/facebook.svg',
           20.0.w,
           30.0.h,
-          () {
-           
-          },
+          () {},
         ),
       ],
     );

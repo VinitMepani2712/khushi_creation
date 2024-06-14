@@ -56,7 +56,7 @@ class ManualLocationScreen extends StatelessWidget {
 
   Widget buildSearchField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      padding:  EdgeInsets.symmetric(vertical: 8, horizontal: 10),
       child: TextField(
         decoration: InputDecoration(
           border: OutlineInputBorder(
@@ -95,8 +95,8 @@ class ManualLocationScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             child: SvgPicture.asset(
               "assets/svg/search-normal-1.svg",
-              color: Color(0xff704F38),
-            ),
+colorFilter: ColorFilter.mode(Color(0xff704F38), BlendMode.srcIn),
+         ),
           ),
           suffixIcon: Icon(
             FontAwesomeIcons.circleXmark,

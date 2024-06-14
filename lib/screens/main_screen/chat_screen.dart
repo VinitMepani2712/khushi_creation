@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (_auth.currentUser!.email != data['email']) {
       return ListTile(
-        title: Text(data['email']),
+        title: Text(data['name']),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
