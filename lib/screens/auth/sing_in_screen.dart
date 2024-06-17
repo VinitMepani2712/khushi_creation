@@ -22,7 +22,6 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
 
-
     return Scaffold(
       body: ChangeNotifierProvider(
         create: (context) => AuthenticationProvider(),
@@ -160,7 +159,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-Widget _buildSignInButton(
+  Widget _buildSignInButton(
       AuthenticationProvider authProvider, BuildContext context) {
     return Builder(
       builder: (context) => GestureDetector(
@@ -240,7 +239,6 @@ Widget _buildSignInButton(
       ),
     );
   }
-
 
   Widget _buildSignUpText(BuildContext context) {
     return GestureDetector(

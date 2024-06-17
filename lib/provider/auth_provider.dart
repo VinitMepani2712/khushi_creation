@@ -28,8 +28,6 @@ class AuthenticationProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleLogIn = GoogleSignIn();
 
   void setName(String name) {
     _name = name;
@@ -249,7 +247,7 @@ class AuthenticationProvider extends ChangeNotifier {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => BottomNavBar(),
+            builder: (context) => LocationScreen(),
           ),
         );
       } else {
