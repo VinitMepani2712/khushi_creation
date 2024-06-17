@@ -17,10 +17,9 @@ class FilteredClothesScreen extends StatelessWidget {
     }).toList();
 
     return Scaffold(
-  
       appBar: AppBar(
         title: Text('$wishListCategories Clothes'),
-            backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -35,13 +34,16 @@ class FilteredClothesScreen extends StatelessWidget {
 
   Widget buildClothItems(
       List<ClothItemModel> filteredClothes, BuildContext context) {
-    return StaggeredGrid.count(
-      crossAxisCount: 2,
-      children: filteredClothes.map((cloth) {
-        return buildClothItemTile(cloth, context);
-      }).toList(),
-      mainAxisSpacing: 10.0,
-      crossAxisSpacing: 10.0,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: StaggeredGrid.count(
+        crossAxisCount: 2,
+        children: filteredClothes.map((cloth) {
+          return buildClothItemTile(cloth, context);
+        }).toList(),
+        mainAxisSpacing: 10.0,
+        crossAxisSpacing: 10.0,
+      ),
     );
   }
 
@@ -54,7 +56,9 @@ class FilteredClothesScreen extends StatelessWidget {
             productDetailsModel: ProductDetailsModel(
               clothes: cloth,
               onFavoriteToggle: (isFavorite) {},
-              isFavorite: false, imagePaths: [], selectedImageIndex: 0,
+              isFavorite: false,
+              imagePaths: [],
+              selectedImageIndex: 0,
             ),
           ),
         ),

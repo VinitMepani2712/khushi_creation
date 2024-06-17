@@ -119,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
           contentPadding: EdgeInsets.zero,
           title: Text("Your Location"),
           subtitle: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Icon(
                 Icons.location_pin,
@@ -126,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(width: 8.0),
               if (homeProvider.currentLocation != null)
-                Flexible(
+                Expanded(
                   child: Text(
                     homeProvider.currentLocation!,
                     overflow: TextOverflow.ellipsis,
@@ -135,14 +136,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )
               else
-                Text("Fetching location..."),
-              Spacer(),
-              CircleAvatar(
-                backgroundColor: Color(0xffF1F1F1),
-                child: SvgPicture.asset(
-                  "assets/svg/notification-bing.svg",
-                  colorFilter:
-                      ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn),
+                Expanded(
+                  child: Text("Fetching location..."),
+                ),
+              SizedBox(width: 8.0),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: CircleAvatar(
+                  backgroundColor: Color(0xffF1F1F1),
+                  child: SvgPicture.asset(
+                    "assets/svg/notification-bing.svg",
+                    colorFilter:
+                        ColorFilter.mode(Color(0xFF74523A), BlendMode.srcIn),
+                  ),
                 ),
               ),
             ],

@@ -2,6 +2,7 @@ import 'package:khushi_creation/model/cart_model.dart';
 import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:khushi_creation/screens/check_out_screen/check_out_screen.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
@@ -15,7 +16,6 @@ class CartScreen extends StatelessWidget {
       ),
       body: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
-
           return cartProvider.items.isEmpty
               ? Center(
                   child: Padding(
@@ -251,9 +251,14 @@ class CartScreen extends StatelessWidget {
                         backgroundColor:
                             WidgetStateProperty.all<Color>(Colors.brown),
                       ),
-                      onPressed: () {
-                        // Handle checkout
-                      },
+                      onPressed: () =>
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (contex) => CheckOutScreen(),
+                          ),
+                        ),
+                      
                       child: Text(
                         'Proceed to Checkout',
                         style: TextStyle(color: Colors.white),
