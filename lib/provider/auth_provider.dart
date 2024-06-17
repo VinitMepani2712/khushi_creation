@@ -224,11 +224,14 @@ class AuthenticationProvider extends ChangeNotifier {
       _firestore
           .collection('users')
           .doc(googleSignInAccount.serverAuthCode)
-          .set({
-        'uid': googleSignInAccount.id,
-        'email': googleSignInAccount.email,
-        'name': googleSignInAccount.displayName,
-      }, SetOptions(merge: true));
+          .set(
+        {
+          'uid': googleSignInAccount.id,
+          'email': googleSignInAccount.email,
+          'name': googleSignInAccount.displayName,
+        },
+        SetOptions(merge: true),
+      );
 
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
@@ -267,38 +270,5 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> logInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleLogIn.signIn();
-      if (googleUser == null) {
-        return;
-      }
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please sign up first.")),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavBar(),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Authentication failed")),
-      );
-    }
-  }
+  
 }

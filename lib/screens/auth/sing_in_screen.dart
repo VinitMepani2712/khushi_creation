@@ -205,7 +205,7 @@ Widget _buildSignInButton(
           20.0.w,
           30.0.h,
           () {
-            authProvider.logInWithGoogle(context);
+            
           },
         ),
         _buildSocialIcon(
