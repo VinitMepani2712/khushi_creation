@@ -27,7 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: ChangeNotifierProvider(
         create: (context) => AuthenticationProvider(),
         child: Consumer<AuthenticationProvider>(
-          builder: (context, provider, child) {
+          builder: (context, authProvider, child) {
             return GestureDetector(
               onTap: () {
                 FocusScope.of(context).unfocus();
@@ -45,20 +45,20 @@ class _SignInScreenState extends State<SignInScreen> {
                           SizedBox(height: 20.h),
                           _buildSubtitle(),
                           SizedBox(height: 40.h),
-                          _buildEmailField(provider),
+                          _buildEmailField(authProvider),
                           SizedBox(height: 20.h),
-                          _buildPasswordField(provider),
+                          _buildPasswordField(authProvider),
                           SizedBox(height: 10.h),
                           _buildForgotPassword(context),
                           SizedBox(height: 10.h),
-                          _buildSignInButton(provider, context),
+                          _buildSignInButton(authProvider, context),
                           Divider(
                             height: 40.h,
                             color: Color(0xffD1D3D4),
                             indent: 20.w,
                             endIndent: 20.w,
                           ),
-                          _buildSocialIcons(),
+                          _buildSocialIcons(authProvider, context),
                           SizedBox(height: 15.h),
                           _buildSignUpText(context),
                         ],
@@ -193,47 +193,54 @@ Widget _buildSignInButton(
       ),
     );
   }
-  Widget _buildSocialIcons() {
+ 
+  Widget _buildSocialIcons(
+      AuthenticationProvider authProvider, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildSocialIcon(
-          'assets/svg/apple.svg',
-          20.0.w,
-          30.0.h,
-        ),
+        _buildSocialIcon('assets/svg/apple.svg', 20.0.w, 30.0.h, () {}),
         _buildSocialIcon(
           'assets/svg/google.svg',
           20.0.w,
           30.0.h,
+          () {
+            authProvider.logInWithGoogle(context);
+          },
         ),
         _buildSocialIcon(
           'assets/svg/facebook.svg',
           20.0.w,
           30.0.h,
+          () {},
         ),
       ],
     );
   }
 
-  Widget _buildSocialIcon(String assetName, double width, double height) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: CircleAvatar(
-        minRadius: 25,
-        maxRadius: 25,
-        backgroundColor: Colors.transparent,
-        child: SvgPicture.asset(
-          assetName,
-          width: width,
-          height: height,
+  Widget _buildSocialIcon(
+      String assetName, double width, double height, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: CircleAvatar(
+          minRadius: 25,
+          maxRadius: 25,
+          backgroundColor: Colors.transparent,
+          child: SvgPicture.asset(
+            assetName,
+            width: width,
+            height: height,
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildSignUpText(BuildContext context) {
     return GestureDetector(

@@ -365,11 +365,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     }
   }
 
-  Widget _buildPriceAndAddToCartButton(CartProvider cartProvider,
-      ProductDetailsProvider productDetailsProvider) {
+  Widget _buildPriceAndAddToCartButton(
+    CartProvider cartProvider,
+    ProductDetailsProvider productDetailsProvider,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 70, 70, 70),
+        color: Color.fromARGB(255, 214, 214, 214),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),

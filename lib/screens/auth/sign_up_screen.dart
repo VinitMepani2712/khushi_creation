@@ -86,14 +86,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildNameField(AuthenticationProvider authprovider) {
+  Widget _buildNameField(AuthenticationProvider authProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Name"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: authprovider.nameController,
+          controller: authProvider.nameController,
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please enter your name'
               : null,
@@ -107,15 +107,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildEmailField(AuthenticationProvider authprovider) {
+  Widget _buildEmailField(AuthenticationProvider authProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Email"),
         SizedBox(height: 10.h),
         TextFormField(
-          controller: authprovider.emailController,
-          onChanged: (value) => authprovider.setEmail(value),
+          controller: authProvider.emailController,
+          onChanged: (value) => authProvider.setEmail(value),
           validator: (value) => value == null || value.isEmpty
               ? '\u274C Please enter your email address'
               : !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)

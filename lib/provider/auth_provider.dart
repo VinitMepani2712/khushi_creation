@@ -28,6 +28,8 @@ class AuthenticationProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleLogIn = GoogleSignIn();
 
   void setName(String name) {
     _name = name;
@@ -261,6 +263,41 @@ class AuthenticationProvider extends ChangeNotifier {
             style: TextStyle(color: Colors.white),
           ),
         ),
+      );
+    }
+  }
+
+  Future<void> logInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleLogIn.signIn();
+      if (googleUser == null) {
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please sign up first.")),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottomNavBar(),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Authentication failed")),
       );
     }
   }

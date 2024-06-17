@@ -19,6 +19,7 @@ class ProfileProvider with ChangeNotifier {
   final auth = FirebaseAuth.instance;
   final storage = FirebaseStorage.instance;
   final firestore = FirebaseFirestore.instance;
+
   String get photoURL => user?.photoURL ?? 'assets/images/profile/upload.jpg';
 
   Future<void> pickImage() async {
@@ -97,14 +98,70 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount(String password) async {
+    user = auth.currentUser;
+    if (user == null) return;
+
     try {
-      await user!.delete();
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user!.email!,
+        password: password,
+      );
+      await user!.reauthenticateWithCredential(credential);
       await firestore.collection('users').doc(userId).delete();
+      await user!.delete();
       notifyListeners();
     } catch (e) {
       print(e);
+      throw Exception('Error deleting account: ${e.toString()}');
     }
+  }
+
+  Future<void> fetchUserProfile() async {
+    user = auth.currentUser;
+    if (user != null) {
+      userId = user!.uid;
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = userDoc.data();
+      if (data != null) {
+        name = data['name'];
+        email = data['email'];
+        phoneNumber = data['phoneNumber'];
+        gender = data['gender'];
+        dateOfBirth = data['dateOfBirth'];
+        if (data.containsKey('photoURL')) {
+          await user!.updatePhotoURL(data['photoURL']);
+        }
+      }
+      notifyListeners();
+    }
+  }
+
+  Future<void> login(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      user = userCredential.user;
+      await fetchUserProfile();
+    } catch (e) {
+      print(e);
+      throw Exception('Error logging in: ${e.toString()}');
+    }
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
+    user = null;
+    userId = null;
+    name = null;
+    email = null;
+    phoneNumber = null;
+    gender = null;
+    dateOfBirth = null;
+    notifyListeners();
   }
 
   void getUserName() async {
@@ -112,12 +169,9 @@ class ProfileProvider with ChangeNotifier {
     if (user != null) {
       email = user.email;
       userId = user.uid;
-      final DocumentSnapshot<Map<String, dynamic>> users =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .get();
-      Map<String, dynamic>? data = users.data();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = userDoc.data();
       name = data?['name'];
     }
   }
@@ -127,12 +181,9 @@ class ProfileProvider with ChangeNotifier {
     if (user != null) {
       email = user.email;
       userId = user.uid;
-      final DocumentSnapshot<Map<String, dynamic>> users =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .get();
-      Map<String, dynamic>? data = users.data();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = userDoc.data();
       email = data?['email'];
     }
   }
@@ -142,12 +193,9 @@ class ProfileProvider with ChangeNotifier {
     if (user != null) {
       email = user.email;
       userId = user.uid;
-      final DocumentSnapshot<Map<String, dynamic>> users =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .get();
-      Map<String, dynamic>? data = users.data();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = userDoc.data();
       phoneNumber = data?['phoneNumber'];
     }
   }
@@ -157,19 +205,15 @@ class ProfileProvider with ChangeNotifier {
     if (user != null) {
       email = user.email;
       userId = user.uid;
-      final DocumentSnapshot<Map<String, dynamic>> users =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .get();
-      Map<String, dynamic>? data = users.data();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await firestore.collection('users').doc(userId).get();
+      Map<String, dynamic>? data = userDoc.data();
       gender = data?['gender'];
     }
   }
 
   Future<String> uploadProfileImage(File imageFile) async {
     try {
-      // Example: Upload image to Firebase Storage
       String fileName = path.basename(imageFile.path);
       Reference firebaseStorageRef =
           FirebaseStorage.instance.ref().child('profile_images/$fileName');
