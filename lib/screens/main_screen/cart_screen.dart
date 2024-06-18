@@ -251,14 +251,12 @@ class CartScreen extends StatelessWidget {
                         backgroundColor:
                             WidgetStateProperty.all<Color>(Colors.brown),
                       ),
-                      onPressed: () =>
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (contex) => CheckOutScreen(),
-                          ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (contex) => CheckOutScreen(),
                         ),
-                      
+                      ),
                       child: Text(
                         'Proceed to Checkout',
                         style: TextStyle(color: Colors.white),
@@ -393,7 +391,7 @@ class CartScreen extends StatelessWidget {
         Provider.of<CartProvider>(context, listen: false).removeItem(cartItem);
       },
       background: Container(
-        color: Colors.red,
+        color: const Color.fromARGB(255, 252, 178, 172),
         padding: EdgeInsets.symmetric(horizontal: 20.0),
         alignment: AlignmentDirectional.centerEnd,
         child: Icon(

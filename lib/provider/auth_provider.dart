@@ -95,23 +95,24 @@ class AuthenticationProvider extends ChangeNotifier {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      String errorMessage = '';
 
       if (e.code == 'user-not-found') {
-        errorMessage = "User id is not registered";
-      } else if (e.code == 'wrong-password') {
-        errorMessage = "Your password is wrong! Please try again";
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.brown,
           content: Text(
-            errorMessage,
+            "User id is not registered",
             style: AppWidget.snackbarTextStyle(),
           ),
-        ),
-      );
+        );
+      } else if (e.code == 'wrong-password') {
+        SnackBar(
+          backgroundColor: Colors.brown,
+          content: Text(
+            "Your password is wrong! Please try again",
+            style: AppWidget.snackbarTextStyle(),
+          ),
+        );
+      }
     } finally {
       _isLoggingIn = false;
       notifyListeners();
@@ -267,6 +268,4 @@ class AuthenticationProvider extends ChangeNotifier {
       );
     }
   }
-
-  
 }

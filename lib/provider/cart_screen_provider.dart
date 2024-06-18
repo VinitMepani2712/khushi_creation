@@ -11,8 +11,17 @@ class CartProvider with ChangeNotifier {
         (total, item) => total + (item.clothes.price * item.quantity),
       );
   double get discount => subtotal * 0.05;
-  double get deliveryFee {
+
+  double get baseDeliveryFee {
     return subtotal > 2000 ? 0 : 40;
+  }
+
+  double _deliveryFee = 0.0;
+  double get deliveryFee => _deliveryFee > 0 ? _deliveryFee : baseDeliveryFee;
+
+  void setDeliveryFee(double fee) {
+    _deliveryFee = fee;
+    notifyListeners();
   }
 
   double get totalPrice => subtotal + deliveryFee - discount;

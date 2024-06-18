@@ -41,8 +41,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           SizedBox(height: 20.h),
                           _buildSubtitle(),
                           SizedBox(height: 50.h),
-                          _buildNameField(authProvider),
-                          SizedBox(height: 20.h),
                           _buildEmailField(authProvider),
                           SizedBox(height: 20.h),
                           _buildPasswordField(authProvider),
@@ -83,27 +81,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "Fill your information below or register \nwith your social account",
       textAlign: TextAlign.center,
       style: AppWidget.lightTextStyle(),
-    );
-  }
-
-  Widget _buildNameField(AuthenticationProvider authProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Name"),
-        SizedBox(height: 10.h),
-        TextFormField(
-          controller: authProvider.nameController,
-          validator: (value) => value == null || value.isEmpty
-              ? '\u274C Please enter your name'
-              : null,
-          decoration: _inputDecoration(
-            hintText: "Name",
-            icon: Icons.person,
-          ),
-          style: TextStyle(color: Colors.black),
-        ),
-      ],
     );
   }
 

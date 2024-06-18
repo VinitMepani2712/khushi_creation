@@ -11,6 +11,12 @@ class HomeProviderScreen with ChangeNotifier {
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
   String? currentLocation;
+   String _selectedAddress = '';
+  String _selectedAddressType = '';
+
+  
+  String get selectedAddress => _selectedAddress;
+  String get selectedAddressType => _selectedAddressType;
 
   // String? get currentLocation => _currentLocation;
 
@@ -190,5 +196,13 @@ class HomeProviderScreen with ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+ 
+
+  void setSelectedAddress(String address, String addressType) {
+    _selectedAddress = address;
+    _selectedAddressType = addressType;
+    notifyListeners(); 
   }
 }
