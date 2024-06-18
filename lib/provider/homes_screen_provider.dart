@@ -202,4 +202,6 @@ class HomeProviderScreen with ChangeNotifier {
     selectedAddressType = addressType;
     notifyListeners();
   }
+
+  void updateAddresses(Map<String, String?> newAddress) {}
 }
