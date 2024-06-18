@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AddressProvider with ChangeNotifier {
-  String? houseNumber = '';
-  String? street = '';
-  String? area = '';
-  String? pincode = '';
-  String? city = '';
-  String? state = '';
-  String? country = '';
+  String? houseNumber;
+  String? street;
+  String? area;
+  String? pincode;
+  String? city;
+  String? state;
+  String? country;
   String addressType = 'Home';
-  String? customAddressType = '';
+  String? customAddressType;
 
   void setHouseNumber(String value) {
     houseNumber = value;
