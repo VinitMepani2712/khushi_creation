@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:khushi_creation/provider/address_proivder.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +11,8 @@ class AddressSelectionScreen extends StatefulWidget {
 
 class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _customAddressTypeController =
+      TextEditingController();
 
   String _selectedAddressType = 'Home';
   User? _user;
@@ -46,6 +47,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
             _buildAddNewAddressText(),
             SizedBox(height: 20.0),
             _buildAddressTypeDropdown(),
+            if (_selectedAddressType == 'Other') _buildCustomAddressTypeField(),
             SizedBox(height: 16.0),
             _buildAddressTextField(),
             SizedBox(height: 24.0),
@@ -92,6 +94,20 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildCustomAddressTypeField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: TextField(
+        controller: _customAddressTypeController,
+        decoration: InputDecoration(
+          labelText: 'Specify Address Type',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+        ),
+      ),
     );
   }
 
@@ -150,7 +166,9 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   void _saveAddress(BuildContext context) async {
     if (_addressController.text.isNotEmpty) {
       String address = _addressController.text;
-      String addressType = _selectedAddressType;
+      String addressType = _selectedAddressType == 'Other'
+          ? _customAddressTypeController.text
+          : _selectedAddressType;
 
       try {
         if (_user != null) {
@@ -164,11 +182,12 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           });
 
           Provider.of<HomeProviderScreen>(context, listen: false)
-              .setCurrentLocation(address);
+              .setCurrentLocation(address, addressType);
 
           Navigator.pop(context);
 
           _addressController.clear();
+          _customAddressTypeController.clear();
           setState(() {
             _selectedAddressType = 'Home';
           });
@@ -349,7 +368,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
 
       selectedAddressProvider.setCurrentLocation(
         data['address'],
-        // data['addressType'],
+        data['addressType'],
       );
 
       Navigator.pop(context);

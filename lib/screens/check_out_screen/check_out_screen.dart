@@ -7,14 +7,12 @@ import 'package:khushi_creation/provider/cart_screen_provider.dart';
 import 'package:khushi_creation/model/cart_model.dart';
 
 class CheckOutScreen extends StatefulWidget {
-  
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
   String _selectedShippingType = 'Economy';
-  
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +46,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Shipping Address',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+            Text(
+              'Shipping Address',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
             ListTile(
-              leading: Icon(Icons.location_pin, color: Color(0xff704F38)),
-              title: Text('Home'),
+              leading: Icon(
+                Icons.location_pin,
+                color: Color(0xff704F38),
+              ),
+              title: Text(homeProvider.currentAddressType ?? 'Home'),
               subtitle: homeProvider.currentLocation != null
                   ? Text(
                       homeProvider.currentLocation!,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 10,
                       style: TextStyle(fontSize: 14),
                     )
                   : Text("Fetching location..."),
@@ -69,7 +72,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         builder: (context) => AddressSelectionScreen()),
                   );
                   if (selectedAddress != null) {
-                    homeProvider.setCurrentLocation(selectedAddress);
+                    homeProvider.setCurrentLocation(
+                      selectedAddress['address'],
+                      selectedAddress['addressType'],
+                    );
                   }
                 },
                 child: Text('CHANGE', style: TextStyle(color: Colors.brown)),
@@ -223,7 +229,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildSummaryRow('Sub Total:', cartProvider.subtotal),
+              SizedBox(height: 5.0),
               _buildSummaryRow('Delivery Fee:', cartProvider.deliveryFee),
+              SizedBox(height: 5.0),
               _buildSummaryRow('Discount:', -cartProvider.discount),
               Divider(),
               _buildSummaryRow('Total Cost:', cartProvider.totalPrice,
@@ -231,17 +239,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               SizedBox(height: 10.0),
               TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      WidgetStateProperty.all<Color>(Colors.brown),
+                  backgroundColor: WidgetStateProperty.all<Color>(Colors.brown),
                   minimumSize: WidgetStateProperty.all<Size>(
                       Size(MediaQuery.of(context).size.width, 50)),
                 ),
-                onPressed: () {
-                  // Navigate to payment screen
-                },
+                onPressed: () {},
                 child: Text('Continue to Payment',
                     style: TextStyle(color: Colors.white, fontSize: 18.0)),
               ),
+              SizedBox(height: 10.0),
             ],
           ),
         );

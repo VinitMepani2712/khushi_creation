@@ -40,7 +40,7 @@ void main() async {
           create: (context) => AuthenticationProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => SelectedAddressProvider(),
+          create: (context) => AddressProvider(),
         ),
       ],
       child: const KhushiCreation(),
