@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khushi_creation/provider/homes_screen_provider.dart';
 import 'package:khushi_creation/screens/check_out_screen/shipping_address_screen.dart';
 import 'package:khushi_creation/screens/check_out_screen/shipping_type_screen.dart';
@@ -212,8 +213,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
         return Container(
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.only(
+              top: 10.0.h, left: 10.0.w, right: 10.0.w, bottom: 10.h),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
             color: Theme.of(context).brightness == Brightness.light
                 ? Color.fromARGB(255, 255, 255, 255)
                 : Color.fromARGB(255, 0, 0, 0),

@@ -57,7 +57,8 @@ class CartScreen extends StatelessWidget {
                 ],
               ),
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.only(
+                    top: 10.0.h, left: 10.0.w, right: 10.0.w, bottom: 10.h),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khushi_creation/screens/auth/sing_in_screen.dart';
+import 'package:khushi_creation/screens/profile_screen/order_screen/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:khushi_creation/provider/profile_provider.dart';
 import 'package:khushi_creation/screens/profile_screen/edit_profile_screen.dart';
@@ -122,6 +123,14 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.shopping_bag,
             text: 'My Orders',
             isLastItem: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderScreen(),
+                ),
+              );
+            },
           ),
           ProfileMenuItem(
             icon: Icons.settings,

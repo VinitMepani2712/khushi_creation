@@ -70,6 +70,7 @@ class AddressProvider with ChangeNotifier {
   void setMobileNumber(String value) {
     mobileNumber = value;
     notifyListeners();
+    
   }
 
   String get address {

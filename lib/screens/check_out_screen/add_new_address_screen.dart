@@ -23,12 +23,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final TextEditingController customAddressTypeController =
       TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String _selectedAddressType = 'Home';
 
   @override
   void initState() {
     super.initState();
     _loadAddressData();
+    clearControllers();
   }
 
   void _loadAddressData() {
@@ -50,39 +53,43 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text('Add New Address'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAddNewAddressText(),
-              SizedBox(height: 20.0),
-              _buildAddressTypeDropdown(),
-              SizedBox(height: 16.0),
-              if (_selectedAddressType == 'Other')
-                _buildCustomAddressTypeField(),
-              SizedBox(height: 16.0),
-              _buildHouseNumberField(),
-              SizedBox(height: 12.0),
-              _buildStreetField(),
-              SizedBox(height: 12.0),
-              _buildAreaField(),
-              SizedBox(height: 12.0),
-              _buildPincodeField(),
-              SizedBox(height: 12.0),
-              _buildCityField(),
-              SizedBox(height: 12.0),
-              _buildStateField(),
-              SizedBox(height: 12.0),
-              _buildCountryField(),
-              SizedBox(height: 12.0),
-              _buildMobileNumberField(),
-              SizedBox(height: 24.0),
-              _buildSaveAddressButton(),
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAddNewAddressText(),
+                SizedBox(height: 20.0),
+                _buildAddressTypeDropdown(),
+                SizedBox(height: 16.0),
+                if (_selectedAddressType == 'Other')
+                  _buildCustomAddressTypeField(),
+                SizedBox(height: 16.0),
+                _buildHouseNumberField(),
+                SizedBox(height: 12.0),
+                _buildStreetField(),
+                SizedBox(height: 12.0),
+                _buildAreaField(),
+                SizedBox(height: 12.0),
+                _buildPincodeField(),
+                SizedBox(height: 12.0),
+                _buildCityField(),
+                SizedBox(height: 12.0),
+                _buildStateField(),
+                SizedBox(height: 12.0),
+                _buildCountryField(),
+                SizedBox(height: 12.0),
+                _buildMobileNumberField(),
+                SizedBox(height: 24.0),
+                _buildSaveAddressButton(),
+              ],
+            ),
           ),
         ),
       ),
@@ -155,7 +162,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Consumer<AddressProvider>(
-        builder: (context, addressProvider, _) => TextField(
+        builder: (context, addressProvider, _) => TextFormField(
           controller: customAddressTypeController,
           onChanged: (value) {
             addressProvider.setCustomAddressType(value);
@@ -164,7 +171,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             labelText: 'Specify Address Type',
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-            errorText: addressProvider.customAddressType,
           ),
         ),
       ),
@@ -329,12 +335,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             labelText: label,
             prefixIcon: Icon(icon, color: Colors.brown),
             border: OutlineInputBorder(),
-            errorText: validator != null ? validator(controller.text) : null,
           ),
           inputFormatters: inputFormatters,
           keyboardType: label == 'Mobile Number'
               ? TextInputType.phone
               : TextInputType.text,
+          validator: validator,
         ),
         SizedBox(height: 6.0),
       ],
@@ -346,8 +352,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       builder: (context, addressProvider, _) => Center(
         child: ElevatedButton(
           onPressed: () {
-            _saveAddress(context, addressProvider);
-            clearControllers();
+            if (_formKey.currentState!.validate()) {
+              _saveAddress(context, addressProvider);
+              clearControllers();
+              Navigator.pop(context);
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.brown,
@@ -364,69 +373,41 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   void _saveAddress(
       BuildContext context, AddressProvider addressProvider) async {
-    if (_validateFields()) {
-      String addressType = _selectedAddressType == 'Other'
-          ? customAddressTypeController.text
-          : _selectedAddressType;
+    String addressType = _selectedAddressType == 'Other'
+        ? customAddressTypeController.text
+        : _selectedAddressType;
 
-      String formattedAddress = '${addressProvider.houseNumber}, '
-          '${addressProvider.street}, '
-          '${addressProvider.area}, '
-          '${addressProvider.pincode}, '
-          '${addressProvider.city}, '
-          '${addressProvider.state}, '
-          '${addressProvider.country}';
+    String formattedAddress =
+        '${addressProvider.houseNumber}, ${addressProvider.street}, ${addressProvider.area}, ${addressProvider.pincode}, ${addressProvider.city}, ${addressProvider.state}, ${addressProvider.country}';
 
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .collection('addresses')
-              .add({
-            'addressType': addressType,
-            'formattedAddress': formattedAddress,
-            'mobileNumber': addressProvider.mobileNumber,
-          });
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('addresses')
+            .add({
+          'addressType': addressType,
+          'formattedAddress': formattedAddress,
+          'mobileNumber': addressProvider.mobileNumber,
+        });
 
-          Provider.of<HomeProviderScreen>(context, listen: false)
-              .setCurrentLocation(formattedAddress, addressType);
-          clearControllers();
-          Navigator.pop(context);
-        }
-      } catch (e) {
-        print('Error saving address: $e');
-        showDialog(
-          context: context,
-          builder: (context) => _buildErrorDialog(
-            title: 'Error',
-            message: 'Failed to save address. Please try again later.',
-          ),
-        );
+        Provider.of<HomeProviderScreen>(context, listen: false)
+            .setCurrentLocation(formattedAddress, addressType);
+        clearControllers();
+        Navigator.pop(context);
       }
-    } else {
+    } catch (e) {
+      print('Error saving address: $e');
       showDialog(
         context: context,
         builder: (context) => _buildErrorDialog(
           title: 'Error',
-          message: 'Please fill in all fields.',
+          message: 'Failed to save address. Please try again later.',
         ),
       );
     }
-  }
-
-  bool _validateFields() {
-    return houseNumberController.text.isNotEmpty &&
-        streetController.text.isNotEmpty &&
-        areaController.text.isNotEmpty &&
-        pincodeController.text.isNotEmpty &&
-        cityController.text.isNotEmpty &&
-        stateController.text.isNotEmpty &&
-        countryController.text.isNotEmpty &&
-        mobileController.text.isNotEmpty &&
-        (_selectedAddressType != 'Other' ||
-            customAddressTypeController.text.isNotEmpty);
   }
 
   void clearControllers() {
